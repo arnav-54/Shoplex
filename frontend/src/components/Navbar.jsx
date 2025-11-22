@@ -1,0 +1,131 @@
+import React, { useContext, useState } from 'react'
+import {assets} from '../assets/assets'
+import { Link, NavLink } from 'react-router-dom'
+import { ShopContext } from '../context/ShopContext';
+
+const Navbar = () => {
+
+    const [visible,setVisible] = useState(false);
+
+    const {setShowSearch , getCartCount , navigate, token, setToken, setCartItems} = useContext(ShopContext);
+
+    const logout = () => {
+        navigate('/login')
+        localStorage.removeItem('token')
+        setToken('')
+        setCartItems({})
+    }
+
+  return (
+    <div className='glass-effect flex items-center justify-between py-4 px-6 mx-4 rounded-2xl shadow-sm border relative z-50 animate-fade-in-up'>
+      
+      <Link to='/' className='flex items-center gap-3'>
+        <div className='w-10 h-10 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center text-white'>
+          <svg className='w-6 h-6' fill='currentColor' viewBox='0 0 24 24'>
+            <path d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/>
+          </svg>
+        </div>
+        <span className='playfair text-2xl font-bold text-amber-800'>Shoplex</span>
+      </Link>
+
+      <ul className='hidden md:flex gap-8 text-sm font-medium'>
+        
+        <NavLink to='/' className='flex flex-col items-center gap-1 text-amber-800 hover:text-orange-600 transition-all duration-200 py-2 px-4 rounded-lg hover:bg-orange-50'>
+            <p className='font-medium'>Home</p>
+            <hr className='w-2/4 border-none h-[2px] bg-orange-500 hidden' />
+        </NavLink>
+        <NavLink to='/collection' className='flex flex-col items-center gap-1 text-amber-800 hover:text-orange-600 transition-all duration-200 py-2 px-4 rounded-lg hover:bg-orange-50'>
+            <p className='font-medium'>Shop</p>
+            <hr className='w-2/4 border-none h-[2px] bg-orange-500 hidden' />
+        </NavLink>
+        <NavLink to='/about' className='flex flex-col items-center gap-1 text-amber-800 hover:text-orange-600 transition-all duration-200 py-2 px-4 rounded-lg hover:bg-orange-50'>
+            <p className='font-medium'>About</p>
+            <hr className='w-2/4 border-none h-[2px] bg-orange-500 hidden' />
+        </NavLink>
+        <NavLink to='/contact' className='flex flex-col items-center gap-1 text-amber-800 hover:text-orange-600 transition-all duration-200 py-2 px-4 rounded-lg hover:bg-orange-50'>
+            <p className='font-medium'>Contact</p>
+            <hr className='w-2/4 border-none h-[2px] bg-orange-500 hidden' />
+        </NavLink>
+
+      </ul>
+
+      <div className='flex items-center gap-4'>
+            <button onClick={()=> { setShowSearch(true); navigate('/collection') }} className='w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-orange-200 hover:text-orange-700 transition-all duration-200'>
+                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+                </svg>
+            </button>
+            
+            <div className='relative'>
+                <button className='w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-orange-200 hover:text-orange-700 transition-all duration-200 group' onClick={()=> token ? null : navigate('/login')}>
+                    <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' />
+                    </svg>
+                    
+                    {/* Dropdown Menu */}
+                    {token && 
+                    <div className='absolute top-full right-0 mt-2 w-48 modern-card py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50'>
+                        <div className='px-4 py-2 border-b border-gray-100'>
+                            <p className='text-sm font-semibold text-gray-800'>Account</p>
+                        </div>
+                        <button onClick={()=>navigate('/orders')} className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-600 transition-colors flex items-center gap-3'>
+                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' />
+                            </svg>
+                            My Orders
+                        </button>
+                        <button onClick={()=>navigate('/profile')} className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-600 transition-colors flex items-center gap-3'>
+                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' />
+                            </svg>
+                            Profile
+                        </button>
+                        <div className='border-t border-gray-100 mt-1'>
+                            <button onClick={logout} className='w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3'>
+                                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1' />
+                                </svg>
+                                Logout
+                            </button>
+                        </div>
+                    </div>}
+                </button>
+            </div> 
+            <Link to='/cart' className='relative'>
+                <button className='w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center hover:bg-orange-200 hover:text-orange-700 transition-all duration-200'>
+                    <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m6 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01' />
+                    </svg>
+                </button>
+                {getCartCount() > 0 && (
+                    <span className='absolute -top-2 -right-2 w-5 h-5 bg-orange-500 text-white rounded-full text-xs font-medium flex items-center justify-center'>
+                        {getCartCount()}
+                    </span>
+                )}
+            </Link> 
+            <button onClick={()=>setVisible(true)} className='w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center md:hidden hover:bg-orange-200 transition-colors'>
+                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 6h16M4 12h16M4 18h16' />
+                </svg>
+            </button>
+      </div>
+
+        {/* Sidebar menu for small screens */}
+        <div className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-gradient-to-b from-orange-50 to-amber-50 transition-all z-40 ${visible ? 'w-full' : 'w-0'}`}>
+                <div className='flex flex-col text-amber-800'>
+                    <div onClick={()=>setVisible(false)} className='flex items-center gap-4 p-4 cursor-pointer bg-white/50 backdrop-blur-sm'>
+                        <img className='h-4 rotate-180' src={assets.dropdown_icon} alt="" />
+                        <p className='font-semibold'>← Back</p>
+                    </div>
+                    <NavLink onClick={()=>setVisible(false)} className='py-4 pl-8 border-b border-orange-100 font-semibold hover:bg-white/30 transition-colors' to='/'>🏠 HOME</NavLink>
+                    <NavLink onClick={()=>setVisible(false)} className='py-4 pl-8 border-b border-orange-100 font-semibold hover:bg-white/30 transition-colors' to='/collection'>🛍️ SHOP</NavLink>
+                    <NavLink onClick={()=>setVisible(false)} className='py-4 pl-8 border-b border-orange-100 font-semibold hover:bg-white/30 transition-colors' to='/about'>🐻 ABOUT US</NavLink>
+                    <NavLink onClick={()=>setVisible(false)} className='py-4 pl-8 border-b border-orange-100 font-semibold hover:bg-white/30 transition-colors' to='/contact'>💬 SUPPORT</NavLink>
+                </div>
+        </div>
+
+    </div>
+  )
+}
+
+export default Navbar
