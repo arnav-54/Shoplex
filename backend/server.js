@@ -40,6 +40,6 @@ app.get('/',(req,res)=>{
 
 app.listen(port, ()=> {
     console.log(`Shoplex Server running on http://localhost:${port}`)
-    console.log('API endpoints ready!')
-    console.log('BigInt serialization fixed!')
+    
+   
 })
