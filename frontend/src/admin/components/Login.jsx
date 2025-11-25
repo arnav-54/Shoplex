@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { backendUrl } from '../App'
+import { backendUrl } from '../../App'
 import { toast } from 'react-toastify'
 
 const Login = ({setToken}) => {
@@ -17,7 +17,7 @@ const Login = ({setToken}) => {
             console.log('Login response:', response.data);
             if (response.data.success) {
                 setToken(response.data.token)
-                navigate('/admin')
+                navigate('/admin/add')
             } else {
                 toast.error(response.data.message)
             }

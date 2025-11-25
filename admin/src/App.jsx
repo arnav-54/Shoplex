@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import Navbar from './components/Navbar'
-import Sidebar from './components/Sidebar'
-import { Routes, Route } from 'react-router-dom'
-import Add from './pages/Add'
-import List from './pages/List'
-import Orders from './pages/Orders'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './components/Login'
+import AdminPanel from './components/AdminPanel'
+import HomePage from './components/HomePage'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -34,22 +31,14 @@ const App = () => {
         pauseOnHover
         theme="light"
       />
-      {token === ""
-        ? <Login setToken={setToken} />
-        : <>
-          <Navbar setToken={setToken} />
-          <div className='flex w-full'>
-            <Sidebar />
-            <div className='flex-1 min-h-screen bg-gradient-to-br from-orange-50/30 to-amber-50/30'>
-              <Routes>
-                <Route path='/add' element={<Add token={token} />} />
-                <Route path='/list' element={<List token={token} />} />
-                <Route path='/orders' element={<Orders token={token} />} />
-              </Routes>
-            </div>
-          </div>
-        </>
-      }
+      <Routes>
+        <Route path='/' element={<HomePage />} />
+        <Route path='/login' element={<Login setToken={setToken} />} />
+        <Route path='/admin/login' element={<Login setToken={setToken} />} />
+        <Route path='/admin/*' element={
+          token ? <AdminPanel token={token} setToken={setToken} /> : <Navigate to='/login' />
+        } />
+      </Routes>
     </div>
   )
 }
