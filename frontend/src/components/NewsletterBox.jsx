@@ -1,9 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { toast } from 'react-toastify'
 
 const NewsletterBox = () => {
+    const [email, setEmail] = useState('')
 
     const onSubmitHandler = (event) => {
         event.preventDefault();
+        if (email) {
+            toast.success('Thank you for subscribing! Check your email for the 20% discount code.')
+            setEmail('')
+        }
     }
 
   return (
@@ -17,6 +23,8 @@ const NewsletterBox = () => {
           className='w-full sm:flex-1 outline-none bg-transparent px-4 py-2 text-amber-800 placeholder-amber-400' 
           type="email" 
           placeholder='Enter your email' 
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <button type='submit' className='btn-primary px-8 py-3 text-sm font-bold'>SUBSCRIBE</button>
