@@ -1,10 +1,10 @@
 services:
   - type: web
     name: shoplex-frontend
-    env: node
+    env: static
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npx serve -c serve.json -l 10000
+    staticPublishPath: ./dist
     envVars:
       - key: NODE_ENV
         value: production
