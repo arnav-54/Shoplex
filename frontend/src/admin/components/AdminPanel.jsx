@@ -14,6 +14,7 @@ const AdminPanel = ({ token, setToken }) => {
         <Sidebar />
         <div className='flex-1 min-h-screen bg-gradient-to-br from-orange-50/30 to-amber-50/30'>
           <Routes>
+            <Route path='dashboard' element={<List token={token} />} />
             <Route path='add' element={<Add token={token} />} />
             <Route path='list' element={<List token={token} />} />
             <Route path='orders' element={<Orders token={token} />} />

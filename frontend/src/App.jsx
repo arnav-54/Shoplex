@@ -51,7 +51,9 @@ const App = () => {
           theme="light"
         />
         <Routes>
-          <Route path='/admin' element={<HomePage />} />
+          <Route path='/admin' element={
+            adminToken ? <Navigate to='/admin/dashboard' /> : <AdminLogin setToken={setAdminToken} />
+          } />
           <Route path='/admin/login' element={<AdminLogin setToken={setAdminToken} />} />
           <Route path='/admin/*' element={
             adminToken ? <AdminPanel token={adminToken} setToken={setAdminToken} /> : <Navigate to='/admin/login' />
