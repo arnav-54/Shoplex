@@ -4,7 +4,7 @@ services:
     env: node
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npx serve -s dist -l 10000 -c serve.json
+    startCommand: npx serve -s dist -p 10000
     envVars:
       - key: NODE_ENV
         value: production
