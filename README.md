@@ -229,7 +229,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Arnav Kumar**
 - GitHub: [@arnav-54](https://github.com/arnav-54)
-- LinkedIn: [Connect with me](https://linkedin.com/in/your-profile)
+- LinkedIn: [Connect with me](https://www.linkedin.com/in/arnav-kumar-ba550031b/)
 
 ## 🙏 Acknowledgments
 
