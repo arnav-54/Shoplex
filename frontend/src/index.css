@@ -29,24 +29,24 @@ body {
   line-height: 1.6;
 }
 
-a.active hr{
-    display: block;
-    background: var(--cozy-orange) !important;
+a.active hr {
+  display: block;
+  background: var(--cozy-orange) !important;
 }
 
 * {
-    font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .playfair {
-    font-family: 'Playfair Display', serif;
+  font-family: 'Playfair Display', serif;
 }
 
 .text-gradient {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .modern-card {
@@ -68,35 +68,48 @@ a.active hr{
   background: linear-gradient(45deg, var(--accent), var(--accent-light));
   color: white;
   border: none;
-  border-radius: 25px;
-  padding: 12px 24px;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(210, 105, 30, 0.3);
+  border-radius: 30px;
+  padding: 16px 32px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
+  cursor: pointer;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(210, 105, 30, 0.5);
+}
+
+.btn-primary:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 4px 15px rgba(210, 105, 30, 0.4);
 }
 
 .btn-secondary {
   background: var(--surface);
   color: var(--text-primary);
-  border: 2px solid var(--border);
-  border-radius: 25px;
-  padding: 12px 24px;
-  font-weight: 500;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  border: 2px solid var(--accent);
+  border-radius: 30px;
+  padding: 16px 32px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1);
 }
 
 .btn-secondary:hover {
-  background: var(--surface-alt);
-  border-color: var(--accent);
-  color: var(--accent);
-  transform: translateY(-2px);
+  background: var(--accent);
+  color: white;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(210, 105, 30, 0.3);
+}
+
+.btn-secondary:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 4px 15px rgba(210, 105, 30, 0.2);
 }
 
 .glass-effect {
@@ -111,6 +124,7 @@ a.active hr{
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -122,6 +136,7 @@ a.active hr{
     opacity: 0;
     transform: translateX(20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -149,7 +164,7 @@ a.active hr{
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -164,13 +179,13 @@ a.active hr{
 ::-webkit-scrollbar-thumb:hover {
   background: var(--secondary);
 }
-  
+
 @media (max-width:640px) {
-    a.active {
-        background: var(--accent);
-        color: white;
-        border-radius: 12px;
-    }
+  a.active {
+    background: var(--accent);
+    color: white;
+    border-radius: 12px;
+  }
 }
 
 /* Input styles */
@@ -187,7 +202,7 @@ a.active hr{
 .input-field:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
 }
 
 /* Badge styles */
@@ -208,4 +223,38 @@ a.active hr{
 .badge-success {
   background: rgba(16, 185, 129, 0.1);
   color: var(--success);
+}
+
+/* Admin Table Styles */
+.admin-table {
+  background: white;
+  border-radius: 16px;
+  border: 2px solid var(--border-light);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(139, 69, 19, 0.08);
+}
+
+.admin-table-header {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--border-light);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-table-row {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+}
+
+.admin-table-row:last-child {
+  border-bottom: none;
+}
+
+.admin-table-row:hover {
+  background: rgba(245, 158, 11, 0.05);
 }

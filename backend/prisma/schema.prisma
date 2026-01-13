@@ -16,9 +16,11 @@ model User {
   email     String   @unique
   password  String
   cartData  Json     @default("{}")
+  wishlist  String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]
+  reviews   Review[]
 
   @@map("users")
 }
@@ -32,13 +34,32 @@ model Product {
   category    String
   subCategory String
   sizes       Json
+  stock       Int      @default(50)
+  originalPrice Float?
   bestseller  Boolean  @default(false)
   date        String
-  isActive    Boolean  @default(true)
+  threeSixtyImages String[] @default([])
+  isActive     Boolean  @default(true)
   createdAt   DateTime @default(now())
+  reviews     Review[]
 
   @@map("products")
 }
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id])
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  userName  String
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+
+  @@map("reviews")
+}
+
 
 model Order {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -51,7 +72,7 @@ model Order {
   paymentMethod String
   payment       Boolean  @default(false)
   date          String
-  orderNumber   String?  @unique
+  orderNumber   String?
   createdAt     DateTime @default(now())
 
   @@map("orders")

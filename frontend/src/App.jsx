@@ -8,6 +8,8 @@ import FAQ from './pages/FAQ'
 import Product from './pages/Product'
 import Cart from './pages/Cart'
 import Login from './pages/Login'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import PlaceOrder from './pages/PlaceOrder'
 import Orders from './pages/Orders'
 import Profile from './pages/Profile'
@@ -17,6 +19,7 @@ import SearchBar from './components/SearchBar'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Verify from './pages/Verify'
+import Wishlist from './pages/Wishlist'
 
 // Admin components
 import AdminLogin from './admin/components/Login'
@@ -24,10 +27,13 @@ import AdminPanel from './admin/components/AdminPanel'
 import HomePage from './admin/components/HomePage'
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
-export const currency = '$'
+export const currency = '₹'
 
 const App = () => {
-  const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken') || '')
+  const [adminToken, setAdminToken] = useState(() => {
+    const t = localStorage.getItem('adminToken');
+    return (t && t !== 'null' && t !== 'undefined') ? t : '';
+  })
   const location = useLocation()
   const isAdminRoute = location.pathname.startsWith('/admin')
 
@@ -38,7 +44,7 @@ const App = () => {
   if (isAdminRoute) {
     return (
       <div className='min-h-screen'>
-        <ToastContainer 
+        <ToastContainer
           position="top-right"
           autoClose={3000}
           hideProgressBar={false}
@@ -77,10 +83,13 @@ const App = () => {
         <Route path='/product/:productId' element={<Product />} />
         <Route path='/cart' element={<Cart />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password/:token' element={<ResetPassword />} />
         <Route path='/place-order' element={<PlaceOrder />} />
         <Route path='/orders' element={<Orders />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/verify' element={<Verify />} />
+        <Route path='/wishlist' element={<Wishlist />} />
       </Routes>
       <Footer />
     </div>

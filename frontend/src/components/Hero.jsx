@@ -7,57 +7,57 @@ const Hero = () => {
       <div className='flex flex-col lg:flex-row min-h-[600px]'>
         {/* Hero Left Side */}
         <div className='w-full lg:w-1/2 flex items-center justify-center py-16 lg:py-0 bg-gradient-to-br from-orange-50 to-amber-50'>
-              <div className='text-center lg:text-left px-8 lg:px-12 max-w-lg'>
-                  <div className='inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-medium mb-6'>
-                      <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
-                          <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
-                      </svg>
-                      PREMIUM QUALITY
-                  </div>
-                  <h1 className='playfair text-5xl lg:text-6xl font-bold leading-tight mb-6 text-amber-800'>
-                      Welcome to
-                      <span className='text-orange-600 block'>Shoplex</span>
-                  </h1>
-                  <p className='text-amber-700 mb-8 text-lg leading-relaxed'>
-                      Discover comfort and style in our curated collection of premium clothing designed for modern living.
-                  </p>
-                  <div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
-                      <button className='btn-primary flex items-center justify-center gap-2'>
-                          <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' />
-                          </svg>
-                          Shop Collection
-                      </button>
-                      <button className='btn-secondary flex items-center justify-center gap-2'>
-                          <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                          </svg>
-                          Learn More
-                      </button>
-                  </div>
-                  
-                  <div className='flex items-center gap-8 mt-12 justify-center lg:justify-start'>
-                      <div className='text-center'>
-                          <div className='text-2xl font-bold text-amber-800'>10K+</div>
-                          <div className='text-sm text-amber-600'>Happy Customers</div>
-                      </div>
-                      <div className='text-center'>
-                          <div className='text-2xl font-bold text-amber-800'>500+</div>
-                          <div className='text-sm text-amber-600'>Products</div>
-                      </div>
-                      <div className='text-center'>
-                          <div className='text-2xl font-bold text-amber-800'>4.9</div>
-                          <div className='text-sm text-amber-600'>Rating</div>
-                      </div>
-                  </div>
+          <div className='text-center lg:text-left px-8 lg:px-12 max-w-lg'>
+            <div className='inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-medium mb-6'>
+              <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
+                <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
+              </svg>
+              PREMIUM QUALITY
+            </div>
+            <h1 className='playfair text-5xl lg:text-6xl font-bold leading-tight mb-6 text-amber-800'>
+              Welcome to
+              <span className='text-orange-600 block'>Shoplex</span>
+            </h1>
+            <p className='text-amber-700 mb-8 text-lg leading-relaxed'>
+              Discover comfort and style in our curated collection of premium clothing designed for modern living.
+            </p>
+            <div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
+              <button className='btn-primary flex items-center justify-center gap-2'>
+                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' />
+                </svg>
+                Shop Collection
+              </button>
+              <button className='btn-secondary flex items-center justify-center gap-2'>
+                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+                </svg>
+                Learn More
+              </button>
+            </div>
+
+            <div className='flex items-center gap-8 mt-12 justify-center lg:justify-start'>
+              <div className='text-center'>
+                <div className='text-2xl font-bold text-amber-800'>10K+</div>
+                <div className='text-sm text-amber-600'>Happy Customers</div>
               </div>
+              <div className='text-center'>
+                <div className='text-2xl font-bold text-amber-800'>500+</div>
+                <div className='text-sm text-amber-600'>Products</div>
+              </div>
+              <div className='text-center'>
+                <div className='text-2xl font-bold text-amber-800'>4.9</div>
+                <div className='text-sm text-amber-600'>Rating</div>
+              </div>
+            </div>
+          </div>
         </div>
-        
+
         {/* Hero Right Side */}
         <div className='w-full lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-amber-100 to-orange-100'>
           <img className='w-full h-full object-cover transform hover:scale-105 transition-transform duration-700' src={assets.hero_img} alt='Fashion Collection' />
           <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent'></div>
-          
+
           {/* Floating Cards */}
           <div className='absolute top-8 right-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 animate-slide-in-right'>
             <div className='flex items-center gap-3'>
@@ -68,11 +68,11 @@ const Hero = () => {
               </div>
               <div>
                 <div className='font-bold text-amber-800'>Free Shipping</div>
-                <div className='text-sm text-orange-600'>On orders over $50</div>
+                <div className='text-sm text-orange-600'>On orders over ₹500</div>
               </div>
             </div>
           </div>
-          
+
           <div className='absolute bottom-8 left-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4'>
             <div className='flex items-center gap-3'>
               <div className='w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center'>

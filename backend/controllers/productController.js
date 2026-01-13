@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary"
 import prisma from "../config/prisma.js"
+import { sendPriceDropEmail } from "../config/email.js"
 
 // function for add product
 const addProduct = async (req, res) => {
@@ -29,15 +30,15 @@ const addProduct = async (req, res) => {
                 return res.json({ success: false, message: "Invalid sizes format" });
             }
             // Validate each size
-            parsedSizes = parsedSizes.filter(size => 
-                typeof size === 'string' && 
-                size.length <= 10 && 
+            parsedSizes = parsedSizes.filter(size =>
+                typeof size === 'string' &&
+                size.length <= 10 &&
                 /^[a-zA-Z0-9]+$/.test(size)
             );
         } catch (error) {
             return res.json({ success: false, message: "Invalid sizes JSON" });
         }
-        
+
         const productData = {
             name,
             description,
@@ -47,6 +48,7 @@ const addProduct = async (req, res) => {
             bestseller: bestseller === "true" ? true : false,
             sizes: parsedSizes,
             image: imagesUrl,
+            originalPrice: Number(price),
             date: Date.now().toString()
         }
 
@@ -65,11 +67,11 @@ const addProduct = async (req, res) => {
 // function for list product
 const listProducts = async (req, res) => {
     try {
-        
+
         const products = await prisma.product.findMany({
             where: { isActive: true }
         });
-        
+
         // Convert for frontend compatibility
         const formattedProducts = products.map(product => ({
             _id: String(product.id),
@@ -81,10 +83,11 @@ const listProducts = async (req, res) => {
             subCategory: product.subCategory,
             sizes: product.sizes,
             bestseller: product.bestseller,
+            threeSixtyImages: product.threeSixtyImages,
             date: parseInt(product.date)
         }));
 
-        res.json({success:true,products:formattedProducts})
+        res.json({ success: true, products: formattedProducts })
 
     } catch (error) {
         console.log(error)
@@ -95,9 +98,74 @@ const listProducts = async (req, res) => {
 // function for removing product
 const removeProduct = async (req, res) => {
     try {
-        
+
         await prisma.product.delete({ where: { id: String(req.body.id) } })
-        res.json({success:true,message:"Product deleted successfully"})
+        res.json({ success: true, message: "Product deleted successfully" })
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// function for updating product
+const updateProduct = async (req, res) => {
+    try {
+        const { id, name, description, price, category, subCategory, sizes, bestseller, threeSixtyImages } = req.body
+
+        // Get existing product to check for price drop
+        const oldProduct = await prisma.product.findUnique({ where: { id: String(id) } })
+
+        if (!oldProduct) {
+            return res.json({ success: false, message: "Product not found" })
+        }
+
+        const newPrice = Number(price)
+        const oldPrice = oldProduct.price
+
+        const updatedData = {
+            name,
+            description,
+            category,
+            price: newPrice,
+            subCategory,
+            bestseller: bestseller === "true" || bestseller === true ? true : false,
+            sizes: typeof sizes === 'string' ? JSON.parse(sizes) : sizes,
+            threeSixtyImages: typeof threeSixtyImages === 'string' ? JSON.parse(threeSixtyImages) : threeSixtyImages
+        }
+
+
+
+        await prisma.product.update({
+            where: { id: String(id) },
+            data: updatedData
+        })
+
+        // Price Drop Alert Logic
+        if (newPrice < oldPrice) {
+            console.log(`Price drop detected for ${name}: ${oldPrice} -> ${newPrice}`)
+
+            // Find users who have this product in their wishlist
+            const usersWithProduct = await prisma.user.findMany({
+                where: {
+                    wishlist: {
+                        has: String(id)
+                    }
+                },
+                select: {
+                    email: true
+                }
+            })
+
+            console.log(`Found ${usersWithProduct.length} users with this product in wishlist`)
+
+            // Send emails concurrently
+            usersWithProduct.forEach(user => {
+                sendPriceDropEmail(user.email, name, oldPrice, newPrice)
+            })
+        }
+
+        res.json({ success: true, message: "Product updated successfully" })
 
     } catch (error) {
         console.log(error)
@@ -108,11 +176,23 @@ const removeProduct = async (req, res) => {
 // function for single product info
 const singleProduct = async (req, res) => {
     try {
-        
         const { productId } = req.body
-        const product = await prisma.product.findUnique({ where: { id: String(productId) } })
-        
+        const product = await prisma.product.findUnique({
+            where: { id: String(productId) },
+            include: {
+                reviews: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    }
+                }
+            }
+        })
+
         if (product) {
+            const averageRating = product.reviews.length > 0
+                ? product.reviews.reduce((acc, rev) => acc + rev.rating, 0) / product.reviews.length
+                : 0;
+
             const formattedProduct = {
                 _id: String(product.id),
                 name: product.name,
@@ -123,11 +203,14 @@ const singleProduct = async (req, res) => {
                 subCategory: product.subCategory,
                 sizes: product.sizes,
                 bestseller: product.bestseller,
-                date: parseInt(product.date)
+                threeSixtyImages: product.threeSixtyImages,
+                date: parseInt(product.date),
+                reviews: product.reviews,
+                averageRating: Number(averageRating.toFixed(1))
             };
-            res.json({success:true,product:formattedProduct})
+            res.json({ success: true, product: formattedProduct })
         } else {
-            res.json({success:false,message:"Product not found"})
+            res.json({ success: false, message: "Product not found" })
         }
 
     } catch (error) {
@@ -136,4 +219,34 @@ const singleProduct = async (req, res) => {
     }
 }
 
-export { listProducts, addProduct, removeProduct, singleProduct }
+// function for add product review
+const addProductReview = async (req, res) => {
+    try {
+        const { productId, rating, comment, userId } = req.body
+
+        // Fetch user name since we only have userId from token
+        const user = await prisma.user.findUnique({ where: { id: userId } })
+
+        if (!user) {
+            return res.json({ success: false, message: "User not found" })
+        }
+
+        const review = await prisma.review.create({
+            data: {
+                productId,
+                userId,
+                userName: user.name,
+                rating: Number(rating),
+                comment
+            }
+        })
+
+        res.json({ success: true, message: "Review added successfully", review })
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export { listProducts, addProduct, removeProduct, singleProduct, updateProduct, addProductReview }

@@ -7,18 +7,62 @@ export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
 
-    const currency = '₹';
     const delivery_fee = 50;
     const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
-    
+
     console.log('ShopContext initialized with backend URL:', backendUrl);
     console.log('Environment variables:', import.meta.env);
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState({});
+    const [wishlist, setWishlist] = useState([]);
     const [products, setProducts] = useState([]);
-    const [token, setToken] = useState('')
+    const [token, setToken] = useState(() => {
+        const t = localStorage.getItem('token');
+        return (t && t !== 'null' && t !== 'undefined') ? t : '';
+    })
+    const [currency, setCurrency] = useState('₹');
+    const [currencyCode, setCurrencyCode] = useState('INR');
+    const [rates, setRates] = useState({ INR: 1 });
     const navigate = useNavigate();
+
+    const currencySymbols = {
+        INR: '₹',
+        USD: '$',
+        EUR: '€',
+        GBP: '£',
+        JPY: '¥',
+        CAD: 'C$',
+        AUD: 'A$',
+    };
+
+    const fetchRates = async (base = 'INR') => {
+        try {
+            const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${base}`);
+            setRates(response.data.rates);
+        } catch (error) {
+            console.error('Error fetching exchange rates:', error);
+        }
+    };
+
+    const detectCurrency = async () => {
+        try {
+            const response = await axios.get('https://ipapi.co/json/');
+            const userCurrency = response.data.currency;
+            if (userCurrency && currencySymbols[userCurrency]) {
+                setCurrencyCode(userCurrency);
+                setCurrency(currencySymbols[userCurrency]);
+                fetchRates('INR'); // Keep INR as base for products
+            }
+        } catch (error) {
+            console.error('Error detecting geo-location:', error);
+        }
+    };
+
+    const formatPrice = (price) => {
+        const rate = rates[currencyCode] || 1;
+        return (price * rate).toFixed(2);
+    };
 
 
     const addToCart = async (itemId, size) => {
@@ -43,7 +87,7 @@ const ShopContextProvider = (props) => {
             cartData[itemId] = {};
             cartData[itemId][size] = 1;
         }
-        
+
         setCartItems(cartData);
 
         if (token) {
@@ -141,10 +185,10 @@ const ShopContextProvider = (props) => {
         }
     }
 
-    const getUserCart = async ( token ) => {
+    const getUserCart = async (token) => {
         try {
-            
-            const response = await axios.post(backendUrl + '/api/cart/get',{},{headers:{Authorization: `Bearer ${token}`}})
+
+            const response = await axios.post(backendUrl + '/api/cart/get', {}, { headers: { Authorization: `Bearer ${token}` } })
             if (response.data.success) {
                 setCartItems(response.data.cartData)
             }
@@ -154,27 +198,93 @@ const ShopContextProvider = (props) => {
         }
     }
 
+    const toggleWishlist = async (productId) => {
+        console.log('toggleWishlist called with ID:', productId);
+        if (!token) {
+            toast.error('Please login to use wishlist')
+            return
+        }
+
+        if (!productId) {
+            console.error('toggleWishlist: productId is undefined or null');
+            return;
+        }
+
+        try {
+            const isWishlisted = wishlist && wishlist.find(item => {
+                if (!item) return false;
+                const itemId = item._id || item.id;
+                const match = itemId && itemId.toString() === productId.toString();
+                console.log(`Checking wishlist item ${itemId} against ${productId}: Match=${match}`);
+                return match;
+            })
+            const endpoint = isWishlisted ? '/api/wishlist/remove' : '/api/wishlist/add'
+
+            console.log('Toggling wishlist:', { productId, isWishlisted: !!isWishlisted, endpoint, wishlistLength: wishlist?.length });
+
+            const cleanProductId = productId.toString().trim();
+            const response = await axios.post(backendUrl + endpoint, { productId: cleanProductId }, { headers: { Authorization: `Bearer ${token}` } })
+
+            console.log('Wishlist Toggle Response:', response.data);
+
+            if (response.data.success) {
+                toast.success(response.data.message)
+                await getWishlist(token)
+            } else {
+                toast.error(response.data.message)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+
+    const getWishlist = async (token) => {
+        try {
+            const response = await axios.post(backendUrl + '/api/wishlist/get', {}, { headers: { Authorization: `Bearer ${token}` } })
+            if (response.data.success) {
+                setWishlist(response.data.wishlist)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         getProductsData()
+        fetchRates()
+        detectCurrency()
     }, [])
 
     useEffect(() => {
-        if (!token && localStorage.getItem('token')) {
-            setToken(localStorage.getItem('token'))
-            getUserCart(localStorage.getItem('token'))
+        const storedToken = localStorage.getItem('token')
+        if (storedToken && storedToken !== 'null' && storedToken !== 'undefined') {
+            if (!token) {
+                setToken(storedToken)
+            }
+        } else if (token) {
+            // LocalStorage is empty but state has token? 
+            // This case shouldn't happen often but let's sync
+            localStorage.setItem('token', token)
         }
+    }, [])
+
+    useEffect(() => {
         if (token) {
             getUserCart(token)
+            getWishlist(token)
         }
     }, [token])
 
     const value = {
-        products, currency, delivery_fee,
+        products, currency, currencyCode, delivery_fee,
         search, setSearch, showSearch, setShowSearch,
-        cartItems, addToCart,setCartItems,
+        cartItems, addToCart, setCartItems,
         getCartCount, updateQuantity,
         getCartAmount, navigate, backendUrl,
-        setToken, token
+        setToken, token,
+        wishlist, toggleWishlist, getWishlist,
+        rates, setCurrencyCode, setCurrency, formatPrice, currencySymbols
     }
 
     return (
