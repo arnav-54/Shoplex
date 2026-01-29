@@ -18,18 +18,18 @@ const Navbar = () => {
     }
 
     return (
-        <div className='bg-white flex items-center justify-between py-4 px-6 mx-4 rounded-2xl shadow-lg border-b-2 border-orange-200 relative z-50 animate-fade-in-up'>
+        <div className='bg-white/80 backdrop-blur-md flex items-center justify-between py-3 px-3 sm:px-6 mx-2 sm:mx-4 my-2 rounded-2xl shadow-lg border-b-2 border-orange-200 sticky top-2 z-50 animate-fade-in-up transition-all duration-300'>
 
-            <Link to='/' className='flex items-center gap-3'>
-                <div className='w-10 h-10 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center text-white'>
-                    <svg className='w-6 h-6' fill='currentColor' viewBox='0 0 24 24'>
+            <Link to='/' className='flex items-center gap-2 sm:gap-3'>
+                <div className='w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center text-white'>
+                    <svg className='w-5 h-5 sm:w-6 sm:h-6' fill='currentColor' viewBox='0 0 24 24'>
                         <path d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z' />
                     </svg>
                 </div>
-                <span className='playfair text-2xl font-bold text-amber-800'>Shoplex</span>
+                <span className='playfair text-xl sm:text-2xl font-bold text-amber-800'>Shoplex</span>
             </Link>
 
-            <ul className='hidden md:flex gap-8 text-sm font-medium'>
+            <ul className='hidden lg:flex gap-8 text-sm font-medium'>
 
                 <NavLink to='/' className='flex flex-col items-center gap-1 text-amber-800 hover:text-orange-600 transition-all duration-200 py-2 px-4 rounded-lg hover:bg-orange-50'>
                     <p className='font-medium'>Home</p>
@@ -50,11 +50,11 @@ const Navbar = () => {
 
             </ul>
 
-            <div className='flex items-center gap-4'>
-                <div className='hidden sm:block'>
+            <div className='flex items-center gap-2 sm:gap-4'>
+                <div className='hidden lg:block'>
                     <CurrencySwitcher />
                 </div>
-                <button onClick={() => { setShowSearch(true); navigate('/collection') }} className='w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-orange-200 hover:text-orange-700 transition-all duration-200'>
+                <button onClick={() => { setShowSearch(true); navigate('/collection') }} className='w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-orange-200 hover:text-orange-700 transition-all duration-200'>
                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                     </svg>
@@ -62,7 +62,7 @@ const Navbar = () => {
 
                 <div className='relative'>
                     {token ? (
-                        <button className='w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-orange-200 hover:text-orange-700 transition-all duration-200 group'>
+                        <button className='w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-orange-200 hover:text-orange-700 transition-all duration-200 group'>
                             <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' />
                             </svg>
@@ -97,9 +97,9 @@ const Navbar = () => {
                     ) : (
                         <button
                             onClick={() => navigate('/login')}
-                            className='flex items-center gap-2 bg-amber-800 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-amber-900 transition-all shadow-md active:scale-95'
+                            className='flex items-center gap-2 bg-amber-800 text-white px-3 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold hover:bg-amber-900 transition-all shadow-md active:scale-95'
                         >
-                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <svg className='w-4 h-4 hidden sm:block' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1' />
                             </svg>
                             Login
@@ -107,30 +107,30 @@ const Navbar = () => {
                     )}
                 </div>
                 <Link to='/wishlist' className='relative'>
-                    <button className='w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center hover:bg-orange-200 transition-all duration-200'>
+                    <button className='w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-xl flex items-center justify-center hover:bg-orange-200 transition-all duration-200'>
                         <svg className='w-5 h-5 text-amber-800' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' />
                         </svg>
                     </button>
                     {wishlist.length > 0 && (
-                        <span className='absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs font-medium flex items-center justify-center animate-pulse'>
+                        <span className='absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white rounded-full text-[10px] sm:text-xs font-medium flex items-center justify-center animate-pulse'>
                             {wishlist.length}
                         </span>
                     )}
                 </Link>
                 <Link to='/cart' className='relative'>
-                    <button className='w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center hover:bg-orange-200 hover:text-orange-700 transition-all duration-200'>
+                    <button className='w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-xl flex items-center justify-center hover:bg-orange-200 hover:text-orange-700 transition-all duration-200'>
                         <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m6 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01' />
                         </svg>
                     </button>
                     {getCartCount() > 0 && (
-                        <span className='absolute -top-2 -right-2 w-5 h-5 bg-orange-500 text-white rounded-full text-xs font-medium flex items-center justify-center'>
+                        <span className='absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 text-white rounded-full text-[10px] sm:text-xs font-medium flex items-center justify-center'>
                             {getCartCount()}
                         </span>
                     )}
                 </Link>
-                <button onClick={() => setVisible(true)} className='w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center md:hidden hover:bg-orange-200 transition-colors'>
+                <button onClick={() => setVisible(true)} className='w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-xl flex items-center justify-center lg:hidden hover:bg-orange-200 transition-colors'>
                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 6h16M4 12h16M4 18h16' />
                     </svg>
@@ -138,16 +138,33 @@ const Navbar = () => {
             </div>
 
             {/* Sidebar menu for small screens */}
-            <div className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-gradient-to-b from-orange-50 to-amber-50 transition-all z-40 ${visible ? 'w-full' : 'w-0'}`}>
-                <div className='flex flex-col text-amber-800'>
-                    <div onClick={() => setVisible(false)} className='flex items-center gap-4 p-4 cursor-pointer bg-white/50 backdrop-blur-sm'>
-                        <img className='h-4 rotate-180' src={assets.dropdown_icon} alt="" />
-                        <p className='font-semibold'>← Back</p>
+            <div className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-gradient-to-b from-orange-50 to-amber-50 transition-all z-[60] ${visible ? 'w-full' : 'w-0'}`}>
+                <div className='flex flex-col text-amber-800 h-full'>
+                    <div onClick={() => setVisible(false)} className='flex items-center gap-4 p-6 cursor-pointer bg-white shadow-sm'>
+                        <svg className='w-6 h-6 rotate-180' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+                        </svg>
+                        <p className='text-lg font-bold'>Menu</p>
                     </div>
-                    <NavLink onClick={() => setVisible(false)} className='py-4 pl-8 border-b border-orange-100 font-semibold hover:bg-white/30 transition-colors' to='/'>🏠 HOME</NavLink>
-                    <NavLink onClick={() => setVisible(false)} className='py-4 pl-8 border-b border-orange-100 font-semibold hover:bg-white/30 transition-colors' to='/collection'>🛍️ SHOP</NavLink>
-                    <NavLink onClick={() => setVisible(false)} className='py-4 pl-8 border-b border-orange-100 font-semibold hover:bg-white/30 transition-colors' to='/about'>🐻 ABOUT US</NavLink>
-                    <NavLink onClick={() => setVisible(false)} className='py-4 pl-8 border-b border-orange-100 font-semibold hover:bg-white/30 transition-colors' to='/contact'>💬 SUPPORT</NavLink>
+                    <div className='flex flex-col p-4 gap-2'>
+                        <NavLink onClick={() => setVisible(false)} className='py-4 px-6 rounded-xl font-semibold hover:bg-orange-100 transition-all flex items-center gap-4' to='/'>
+                            <span className='text-2xl'>🏠</span> HOME
+                        </NavLink>
+                        <NavLink onClick={() => setVisible(false)} className='py-4 px-6 rounded-xl font-semibold hover:bg-orange-100 transition-all flex items-center gap-4' to='/collection'>
+                            <span className='text-2xl'>🛍️</span> SHOP
+                        </NavLink>
+                        <NavLink onClick={() => setVisible(false)} className='py-4 px-6 rounded-xl font-semibold hover:bg-orange-100 transition-all flex items-center gap-4' to='/about'>
+                            <span className='text-2xl'>🐻</span> ABOUT US
+                        </NavLink>
+                        <NavLink onClick={() => setVisible(false)} className='py-4 px-6 rounded-xl font-semibold hover:bg-orange-100 transition-all flex items-center gap-4' to='/contact'>
+                            <span className='text-2xl'>💬</span> SUPPORT
+                        </NavLink>
+                    </div>
+
+                    <div className='mt-auto p-8 bg-orange-100/50 rounded-t-[3rem]'>
+                        <CurrencySwitcher />
+                        <p className='text-center text-xs text-amber-600 mt-6'>© 2024 Shoplex. Premium Quality Fashion.</p>
+                    </div>
                 </div>
             </div>
 
