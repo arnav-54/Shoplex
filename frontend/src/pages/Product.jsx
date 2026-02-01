@@ -155,7 +155,7 @@ const Product = () => {
             </div>
           </div>
 
-          <div className='flex items-center gap-4 mb-6'>
+          <div className='flex flex-wrap items-center gap-4 mb-6'>
             <button
               onClick={async () => {
                 try {
@@ -169,7 +169,7 @@ const Product = () => {
                   toast.error('Failed to add item to cart');
                 }
               }}
-              className='btn-primary text-lg flex items-center gap-2 flex-1'
+              className='btn-primary text-lg flex items-center justify-center gap-2 flex-1 min-w-[200px]'
             >
               <LucideShoppingBag size={20} />
               Add to Cart
@@ -197,16 +197,16 @@ const Product = () => {
 
       {/* ---------- Description & Review Section ------------- */}
       <div className='mt-12 modern-card'>
-        <div className='flex border-b border-orange-200'>
+        <div className='flex overflow-x-auto no-scrollbar border-b border-orange-200'>
           <button
             onClick={() => setActiveTab('description')}
-            className={`px-6 py-3 font-bold transition-all ${activeTab === 'description' ? 'text-amber-800 border-b-2 border-orange-500 bg-orange-50' : 'text-amber-700 hover:bg-orange-50'}`}
+            className={`px-6 py-3 font-bold whitespace-nowrap transition-all ${activeTab === 'description' ? 'text-amber-800 border-b-2 border-orange-500 bg-orange-50' : 'text-amber-700 hover:bg-orange-50'}`}
           >
             Description
           </button>
           <button
             onClick={() => setActiveTab('reviews')}
-            className={`px-6 py-3 font-bold transition-all ${activeTab === 'reviews' ? 'text-amber-800 border-b-2 border-orange-500 bg-orange-50' : 'text-amber-700 hover:bg-orange-50'}`}
+            className={`px-6 py-3 font-bold whitespace-nowrap transition-all ${activeTab === 'reviews' ? 'text-amber-800 border-b-2 border-orange-500 bg-orange-50' : 'text-amber-700 hover:bg-orange-50'}`}
           >
             Reviews ({productData.reviews?.length || 0})
           </button>

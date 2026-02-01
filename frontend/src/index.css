@@ -258,3 +258,10 @@ a.active hr {
 .admin-table-row:hover {
   background: rgba(245, 158, 11, 0.05);
 }
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

@@ -12,7 +12,7 @@ const Dashboard = ({ token }) => {
     const fetchAnalytics = async () => {
         try {
             setLoading(true)
-            const response = await axios.get(backendUrl + '/api/admin/analytics', { headers: { token } })
+            const response = await axios.get(backendUrl + '/api/admin/analytics', { headers: { Authorization: `Bearer ${token}` } })
             if (response.data.success) {
                 setData(response.data.data)
             } else {

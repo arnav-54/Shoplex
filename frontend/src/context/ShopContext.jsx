@@ -52,7 +52,7 @@ const ShopContextProvider = (props) => {
             if (userCurrency && currencySymbols[userCurrency]) {
                 setCurrencyCode(userCurrency);
                 setCurrency(currencySymbols[userCurrency]);
-                fetchRates('INR'); // Keep INR as base for products
+                fetchRates('INR');
             }
         } catch (error) {
             console.error('Error detecting geo-location:', error);
@@ -91,21 +91,21 @@ const ShopContextProvider = (props) => {
         setCartItems(cartData);
 
         if (token) {
+            // Optimistically show success message
+            toast.success('🛒 Added to cart! Check your cozy collection.');
+
             try {
                 console.log('Sending to backend:', { itemId, size });
                 const response = await axios.post(backendUrl + '/api/cart/add', { itemId, size }, { headers: { Authorization: `Bearer ${token}` } })
                 console.log('Backend response:', response.data);
-                if (response.data.success) {
-                    toast.success('🛒 Added to cart! Check your cozy collection.');
-                } else {
-                    toast.error(response.data.message || 'Failed to add to cart');
-                    // Revert local state on backend failure
+                if (!response.data.success) {
+                    // Revert or show error if it failed
+                    toast.error(response.data.message || 'Failed to sync with server');
                     getUserCart(token);
                 }
             } catch (error) {
                 console.log('Cart API error:', error)
                 toast.error('Failed to sync with server, but item added locally!')
-                // Revert local state on network error
                 getUserCart(token);
             }
         } else {
@@ -150,6 +150,54 @@ const ShopContextProvider = (props) => {
             }
         }
 
+    }
+
+    const updateCartItemSize = async (itemId, oldSize, newSize) => {
+        let cartData = structuredClone(cartItems);
+
+        // Safety check
+        if (!cartData[itemId] || !cartData[itemId][oldSize]) return;
+        if (oldSize === newSize) return;
+
+        const quantityToMove = cartData[itemId][oldSize];
+
+        // Remove old size
+        delete cartData[itemId][oldSize];
+        if (Object.keys(cartData[itemId]).length === 0) {
+            delete cartData[itemId];
+        }
+
+        // Add to new size (merge if exists)
+        if (!cartData[itemId]) cartData[itemId] = {};
+
+        if (cartData[itemId][newSize]) {
+            cartData[itemId][newSize] += quantityToMove;
+        } else {
+            cartData[itemId][newSize] = quantityToMove;
+        }
+
+        setCartItems(cartData);
+
+        if (token) {
+            try {
+                // 1. Remove old size quantity (set to 0)
+                await axios.post(backendUrl + '/api/cart/update', { itemId, size: oldSize, quantity: 0 }, { headers: { Authorization: `Bearer ${token}` } });
+
+                // 2. Add/Update new size quantity
+                // We need to know total quantity at new size (if it existed before + what we moved)
+                const newTotalQuantity = cartData[itemId][newSize];
+                await axios.post(backendUrl + '/api/cart/update', { itemId, size: newSize, quantity: newTotalQuantity }, { headers: { Authorization: `Bearer ${token}` } });
+
+                toast.success('Size updated!');
+            } catch (error) {
+                console.log(error);
+                toast.error('Failed to update size');
+                // Revert state if necessary? ideally better error handling
+                getUserCart(token);
+            }
+        } else {
+            toast.success('Size updated!');
+        }
     }
 
     const getCartAmount = () => {
@@ -220,6 +268,10 @@ const ShopContextProvider = (props) => {
             })
             const endpoint = isWishlisted ? '/api/wishlist/remove' : '/api/wishlist/add'
 
+            // Optimistic Toast
+            const message = isWishlisted ? '💔 Removed from wishlist' : '❤️ Added to wishlist';
+            toast.success(message);
+
             console.log('Toggling wishlist:', { productId, isWishlisted: !!isWishlisted, endpoint, wishlistLength: wishlist?.length });
 
             const cleanProductId = productId.toString().trim();
@@ -228,10 +280,13 @@ const ShopContextProvider = (props) => {
             console.log('Wishlist Toggle Response:', response.data);
 
             if (response.data.success) {
-                toast.success(response.data.message)
+                // If we relied on backend message, we might miss it here, but optimistic is better.
+                // toast.success(response.data.message) 
                 await getWishlist(token)
             } else {
                 toast.error(response.data.message)
+                // Revert or refresh if failed?
+                await getWishlist(token)
             }
         } catch (error) {
             console.log(error)
@@ -263,8 +318,7 @@ const ShopContextProvider = (props) => {
                 setToken(storedToken)
             }
         } else if (token) {
-            // LocalStorage is empty but state has token? 
-            // This case shouldn't happen often but let's sync
+
             localStorage.setItem('token', token)
         }
     }, [])
@@ -280,7 +334,7 @@ const ShopContextProvider = (props) => {
         products, currency, currencyCode, delivery_fee,
         search, setSearch, showSearch, setShowSearch,
         cartItems, addToCart, setCartItems,
-        getCartCount, updateQuantity,
+        getCartCount, updateQuantity, updateCartItemSize,
         getCartAmount, navigate, backendUrl,
         setToken, token,
         wishlist, toggleWishlist, getWishlist,

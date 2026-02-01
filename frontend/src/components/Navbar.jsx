@@ -138,7 +138,7 @@ const Navbar = () => {
             </div>
 
             {/* Sidebar menu for small screens */}
-            <div className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-gradient-to-b from-orange-50 to-amber-50 transition-all z-[60] ${visible ? 'w-full' : 'w-0'}`}>
+            <div className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-white transition-all duration-300 z-[100] ${visible ? 'w-full' : 'w-0'}`}>
                 <div className='flex flex-col text-amber-800 h-full'>
                     <div onClick={() => setVisible(false)} className='flex items-center gap-4 p-6 cursor-pointer bg-white shadow-sm'>
                         <svg className='w-6 h-6 rotate-180' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

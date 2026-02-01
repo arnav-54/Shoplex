@@ -1,19 +1,20 @@
-import React from 'react'
-import { assets } from '../../assets/assets'
+import { Link } from 'react-router-dom'
 
 const Navbar = ({ setToken }) => {
   return (
     <div className='bg-white flex items-center justify-between py-4 px-8 border-b border-orange-200/60 sticky top-0 z-50 shadow-[0_2px_15px_rgba(139,69,19,0.02)]'>
       <div className='flex items-center gap-4'>
-        <div className='w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-2xl flex items-center justify-center text-white shadow-md'>
-          <svg className='w-7 h-7' fill='currentColor' viewBox='0 0 24 24'>
-            <path d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z' />
-          </svg>
-        </div>
-        <div>
-          <h1 className='playfair text-2xl font-bold text-amber-900 leading-tight'>Admin Dashboard</h1>
-          <p className='text-xs font-bold text-orange-500 uppercase tracking-widest'>Commerce Portal</p>
-        </div>
+        <Link to='/' className='flex items-center gap-4 cursor-pointer'>
+          <div className='w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-2xl flex items-center justify-center text-white shadow-md'>
+            <svg className='w-7 h-7' fill='currentColor' viewBox='0 0 24 24'>
+              <path d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z' />
+            </svg>
+          </div>
+          <div>
+            <h1 className='playfair text-2xl font-bold text-amber-900 leading-tight'>Admin Dashboard</h1>
+            <p className='text-xs font-bold text-orange-500 uppercase tracking-widest'>Commerce Portal</p>
+          </div>
+        </Link>
       </div>
       <button onClick={() => setToken('')} className='btn-primary flex items-center gap-2 !py-2.5 !px-6 !text-sm'>
         <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
