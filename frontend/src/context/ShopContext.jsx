@@ -38,8 +38,21 @@ const ShopContextProvider = (props) => {
 
     const fetchRates = async (base = 'INR') => {
         try {
+            const cachedRates = localStorage.getItem('currencyRates');
+            const cachedTime = localStorage.getItem('currencyRatesTime');
+
+            // value in milliseconds (24 hours)
+            const EXPIRY = 24 * 60 * 60 * 1000;
+
+            if (cachedRates && cachedTime && (Date.now() - cachedTime < EXPIRY)) {
+                setRates(JSON.parse(cachedRates));
+                return;
+            }
+
             const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${base}`);
             setRates(response.data.rates);
+            localStorage.setItem('currencyRates', JSON.stringify(response.data.rates));
+            localStorage.setItem('currencyRatesTime', Date.now());
         } catch (error) {
             console.error('Error fetching exchange rates:', error);
         }
@@ -47,11 +60,24 @@ const ShopContextProvider = (props) => {
 
     const detectCurrency = async () => {
         try {
+            const cachedCurrency = localStorage.getItem('userCurrency');
+
+            if (cachedCurrency) {
+                const userCurrency = cachedCurrency;
+                if (userCurrency && currencySymbols[userCurrency]) {
+                    setCurrencyCode(userCurrency);
+                    setCurrency(currencySymbols[userCurrency]);
+                    fetchRates('INR');
+                    return;
+                }
+            }
+
             const response = await axios.get('https://ipapi.co/json/');
             const userCurrency = response.data.currency;
             if (userCurrency && currencySymbols[userCurrency]) {
                 setCurrencyCode(userCurrency);
                 setCurrency(currencySymbols[userCurrency]);
+                localStorage.setItem('userCurrency', userCurrency);
                 fetchRates('INR');
             }
         } catch (error) {
@@ -202,15 +228,20 @@ const ShopContextProvider = (props) => {
 
     const getCartAmount = () => {
         let totalAmount = 0;
-        for (const items in cartItems) {
-            let itemInfo = products.find((product) => product._id === items);
-            for (const item in cartItems[items]) {
+        // Create a map for O(1) lookup
+        const productMap = new Map(products.map(product => [product._id, product]));
+
+        for (const itemId in cartItems) {
+            let itemInfo = productMap.get(itemId);
+            if (!itemInfo) continue;
+
+            for (const size in cartItems[itemId]) {
                 try {
-                    if (cartItems[items][item] > 0) {
-                        totalAmount += itemInfo.price * cartItems[items][item];
+                    if (cartItems[itemId][size] > 0) {
+                        totalAmount += itemInfo.price * cartItems[itemId][size];
                     }
                 } catch (error) {
-
+                    console.error(error);
                 }
             }
         }

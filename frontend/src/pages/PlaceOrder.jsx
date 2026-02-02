@@ -61,14 +61,17 @@ const PlaceOrder = () => {
         try {
 
             let orderItems = []
+            // optimization: create map for fast lookup
+            const productMap = new Map(products.map(p => [p._id, p]));
 
-            for (const items in cartItems) {
-                for (const item in cartItems[items]) {
-                    if (cartItems[items][item] > 0) {
-                        const itemInfo = structuredClone(products.find(product => product._id === items))
-                        if (itemInfo) {
-                            itemInfo.size = item
-                            itemInfo.quantity = cartItems[items][item]
+            for (const itemId in cartItems) {
+                for (const size in cartItems[itemId]) {
+                    if (cartItems[itemId][size] > 0) {
+                        const product = productMap.get(itemId);
+                        if (product) {
+                            const itemInfo = structuredClone(product)
+                            itemInfo.size = size
+                            itemInfo.quantity = cartItems[itemId][size]
                             orderItems.push(itemInfo)
                         }
                     }
