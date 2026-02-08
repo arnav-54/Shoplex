@@ -67,7 +67,7 @@ const Navbar = () => {
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' />
                             </svg>
 
-                            {/* Dropdown Menu */}
+
                             <div className='absolute top-full right-0 mt-2 w-48 modern-card py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50'>
                                 <div className='px-4 py-2 border-b border-gray-100'>
                                     <p className='text-sm font-semibold text-gray-800'>Account</p>
@@ -137,7 +137,7 @@ const Navbar = () => {
                 </button>
             </div>
 
-            {/* Sidebar menu for small screens */}
+
             <div className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-white transition-all duration-300 z-[100] ${visible ? 'w-full' : 'w-0'}`}>
                 <div className='flex flex-col text-amber-800 h-full'>
                     <div onClick={() => setVisible(false)} className='flex items-center gap-4 p-6 cursor-pointer bg-white shadow-sm'>

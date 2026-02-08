@@ -21,7 +21,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Verify from './pages/Verify'
 import Wishlist from './pages/Wishlist'
 
-// Admin components
+
 import AdminLogin from './admin/components/Login'
 import AdminPanel from './admin/components/AdminPanel'
 import HomePage from './admin/components/HomePage'
