@@ -78,9 +78,9 @@ const List = ({ token }) => {
         </div>
       </div>
 
-      <div className='admin-table'>
+      <div className='bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden'>
         {/* ------- Table Header ---------- */}
-        <div className='hidden md:grid grid-cols-[0.8fr_2.5fr_1fr_1fr_0.8fr] items-center admin-table-header'>
+        <div className='hidden md:grid grid-cols-[0.8fr_2.5fr_1fr_1fr_0.8fr] items-center bg-gray-50 border-b border-gray-100 p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider'>
           <span>Image</span>
           <span>Product Details</span>
           <span>Category</span>
@@ -89,64 +89,90 @@ const List = ({ token }) => {
         </div>
 
         {/* ------ Product List ------ */}
-        <div className='divide-y divide-orange-100'>
-          {
-            list.map((item, index) => (
-              <div className='grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[0.8fr_2.5fr_1fr_1fr_0.8fr] items-center gap-4 admin-table-row group' key={index}>
+        <div className='divide-y divide-gray-100'>
+          {filteredList.map((item, index) => (
+            <div key={index} className='group hover:bg-gray-50 transition-colors'>
+              {/* Desktop View */}
+              <div className='hidden md:grid grid-cols-[0.8fr_2.5fr_1fr_1fr_0.8fr] items-center gap-4 p-4'>
                 <div className='flex items-center justify-center'>
-                  <div className='relative overflow-hidden rounded-xl border border-orange-100 group-hover:border-orange-300 transition-colors'>
-                    <img className='w-14 h-14 object-cover' src={item.image[0]} alt={item.name} />
+                  <div className='relative overflow-hidden rounded-xl border border-gray-200 group-hover:border-amber-200 transition-colors shadow-sm w-16 h-16'>
+                    <img className='w-full h-full object-cover' src={item.image[0]} alt={item.name} />
                   </div>
                 </div>
 
                 <div>
-                  <p className='font-bold text-amber-900 group-hover:text-amber-600 transition-colors'>{item.name}</p>
-                  <p className='text-xs text-amber-700/80 line-clamp-1 italic'>{item.description}</p>
+                  <p className='font-bold text-gray-800 group-hover:text-amber-700 transition-colors text-sm sm:text-base'>{item.name}</p>
+                  <p className='text-xs text-gray-500 line-clamp-1 italic mt-0.5'>{item.description}</p>
                 </div>
 
                 <div>
-                  <span className='badge badge-primary !px-3 !py-1 text-[11px] uppercase tracking-wider font-bold'>{item.category}</span>
+                  <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200'>
+                    {item.category}
+                  </span>
                 </div>
 
                 <div>
-                  <p className='text-lg font-black text-amber-900'>{currency}{item.price}</p>
+                  <p className='text-sm font-bold text-gray-700 font-mono'>{currency}{item.price}</p>
                 </div>
 
-                <div className='flex justify-center gap-3'>
+                <div className='flex justify-center gap-2'>
                   <Link
                     to={`/admin/edit/${item._id}`}
-                    className='w-9 h-9 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center transition-all duration-300 group/btn border border-orange-100 hover:border-orange-200'
+                    className='p-2 bg-white text-gray-600 rounded-lg border border-gray-200 hover:border-amber-300 hover:text-amber-600 hover:shadow-sm transition-all'
                     title='Edit Product'
                   >
-                    <svg className='w-4 h-4 transform group-hover/btn:scale-110' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' />
-                    </svg>
+                    <Edit size={16} />
                   </Link>
                   <button
                     onClick={() => removeProduct(item._id)}
-                    className='w-9 h-9 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl flex items-center justify-center transition-all duration-300 group/btn border border-red-100 hover:border-red-200'
+                    className='p-2 bg-white text-gray-600 rounded-lg border border-gray-200 hover:border-red-300 hover:text-red-600 hover:shadow-sm transition-all'
                     title='Delete Product'
                   >
-                    <svg className='w-4 h-4 transform group-hover/btn:scale-110' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
-                    </svg>
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>
-            ))
-          }
+
+              {/* Mobile Card View */}
+              <div className='md:hidden p-4 flex gap-4'>
+                <div className='w-20 h-20 flex-shrink-0 rounded-xl border border-gray-200 overflow-hidden'>
+                  <img className='w-full h-full object-cover' src={item.image[0]} alt={item.name} />
+                </div>
+                <div className='flex-1 flex flex-col justify-between'>
+                  <div>
+                    <div className='flex justify-between items-start'>
+                      <h3 className='font-bold text-gray-800 line-clamp-1'>{item.name}</h3>
+                      <p className='font-mono font-bold text-amber-600'>{currency}{item.price}</p>
+                    </div>
+                    <p className='text-xs text-gray-500 mt-1 line-clamp-1'>{item.description}</p>
+                    <span className='inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 uppercase tracking-widest'>
+                      {item.category}
+                    </span>
+                  </div>
+                  <div className='flex justify-end gap-3 mt-3'>
+                    <Link to={`/admin/edit/${item._id}`} className='text-sm font-medium text-amber-600 flex items-center gap-1'>
+                      <Edit size={14} /> Edit
+                    </Link>
+                    <button onClick={() => removeProduct(item._id)} className='text-sm font-medium text-red-500 flex items-center gap-1'>
+                      <Trash2 size={14} /> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {list.length === 0 && (
+        {filteredList.length === 0 && (
           <div className='text-center py-20 bg-white'>
             <div className='col-span-full'>
-              <div className='w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6'>
-                <svg className='w-10 h-10 text-orange-200' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4' />
-                </svg>
+              <div className='w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-100'>
+                <Package className='text-gray-300' size={32} />
               </div>
-              <p className='text-amber-900 text-2xl font-bold mb-2'>No products found</p>
-              <p className='text-amber-700/60 font-medium'>Add your first product to get started</p>
+              <p className='text-gray-800 text-xl font-bold mb-2'>No products found</p>
+              <p className='text-gray-500'>
+                {searchTerm ? `No results for "${searchTerm}"` : 'Add your first product to get started'}
+              </p>
             </div>
           </div>
         )}
