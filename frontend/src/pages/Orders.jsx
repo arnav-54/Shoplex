@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import Title from '../components/Title';
 import axios from 'axios';
+import { Package, Truck, CheckCircle, Clock, MapPin, X } from 'lucide-react';
 
 const Orders = () => {
 
@@ -33,7 +34,7 @@ const Orders = () => {
       }
 
     } catch (error) {
-
+      console.log(error)
     }
   }
 
@@ -41,92 +42,132 @@ const Orders = () => {
     loadOrderData()
   }, [token])
 
-  return (
-    <div className='border-t pt-16'>
+  const getStatusStep = (status) => {
+    const steps = ['Order Placed', 'Packing', 'Shipped', 'Out for delivery', 'Delivered'];
+    const index = steps.indexOf(status);
+    return index === -1 ? 0 : index + 1;
+  }
 
-      <div className='text-2xl'>
+  return (
+    <div className='border-t pt-16 min-h-[60vh] pb-20'>
+
+      <div className='text-3xl mb-10'>
         <Title text1={'MY'} text2={'ORDERS'} />
       </div>
 
-      <div>
-        {
+      <div className='space-y-6 max-w-6xl mx-auto'>
+        {orderData.length === 0 ? (
+          <div className="text-center py-20 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+            <Package className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No orders</h3>
+            <p className="mt-1 text-sm text-gray-500">You haven't placed any orders yet.</p>
+          </div>
+        ) : (
           orderData.map((item, index) => (
-            <div key={index} className='py-4 border-t border-b text-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
-              <div className='flex items-start gap-6 text-sm'>
-                <img className='w-16 sm:w-20' src={item.image[0]} alt="" />
+            <div key={index} className='modern-card flex flex-col md:flex-row md:items-center md:justify-between gap-6 p-6 hover:shadow-lg transition-all'>
+              <div className='flex items-start gap-6'>
+                <div className="relative">
+                  <img className='w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-sm' src={item.image[0]} alt={item.name} />
+                  <span className="absolute -top-2 -right-2 bg-amber-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-md">
+                    {item.quantity}
+                  </span>
+                </div>
                 <div>
-                  <p className='sm:text-base font-medium'>{item.name}</p>
-                  <div className='flex items-center gap-3 mt-1 text-base text-gray-700'>
-                    <p>{currency}{formatPrice(item.price)}</p>
-                    <p>Quantity: {item.quantity}</p>
-                    <p>Size: {item.size}</p>
+                  <h3 className='text-xl font-bold text-gray-800 font-playfair'>{item.name}</h3>
+                  <div className='flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-600'>
+                    <span className='font-bold text-amber-700 text-lg'>{currency}{formatPrice(item.price)}</span>
+                    <span className='w-1 h-1 bg-gray-300 rounded-full'></span>
+                    <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-700">Size: {item.size}</span>
+                    <span className='w-1 h-1 bg-gray-300 rounded-full'></span>
+                    <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-700">{item.paymentMethod}</span>
                   </div>
-                  <p className='mt-1'>Date: <span className=' text-gray-400'>{new Date(Number(item.date)).toLocaleDateString()}</span></p>
-                  <p className='mt-1'>Payment: <span className=' text-gray-400'>{item.paymentMethod}</span></p>
+                  <p className='mt-3 text-sm flex items-center gap-2 text-gray-500'>
+                    <Clock size={14} />
+                    Ordered on: <span className='text-gray-700 font-medium'>{new Date(Number(item.date)).toLocaleDateString()}</span>
+                  </p>
                 </div>
               </div>
-              <div className='md:w-1/2 flex justify-between'>
-                <div className='flex items-center gap-2'>
-                  <p className='min-w-2 h-2 rounded-full bg-green-500'></p>
-                  <p className='text-sm md:text-base'>{item.status}</p>
+
+              <div className='md:w-1/3 flex flex-col md:items-end justify-between gap-4'>
+                <div className='flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-200 shadow-sm'>
+                  <span className={`w-3 h-3 rounded-full ${item.status === 'Delivered' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'}`}></span>
+                  <p className='text-sm font-semibold text-gray-700'>{item.status}</p>
                 </div>
-                <button onClick={() => { setSelectedOrder(item); setShowTracking(true) }} className='border px-4 py-2 text-sm font-medium rounded-sm hover:bg-orange-50 transition-colors'>Track Order</button>
+                <button
+                  onClick={() => { setSelectedOrder(item); setShowTracking(true) }}
+                  className='btn-secondary py-2.5 px-6 flex items-center gap-2 text-sm hover:translate-x-1 transition-transform'
+                >
+                  Track Order <Truck size={16} />
+                </button>
               </div>
             </div>
           ))
-        }
+        )}
       </div>
 
-      {/* Tracking Modal */}
+
       {showTracking && selectedOrder && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'>
-          <div className='bg-white rounded-lg max-w-md w-full p-6'>
-            <div className='flex justify-between items-center mb-6'>
-              <h3 className='text-lg font-semibold'>Order Tracking</h3>
-              <button onClick={() => setShowTracking(false)} className='text-gray-500 hover:text-gray-700'>
-                <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-                </svg>
-              </button>
+        <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-fade-in'>
+          <div className='bg-white rounded-2xl max-w-lg w-full p-8 relative shadow-2xl animate-fade-in-up border border-gray-100'>
+            <button onClick={() => setShowTracking(false)} className='absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition-colors'>
+              <X size={24} />
+            </button>
+
+            <div className="text-center mb-8">
+              <h3 className='text-2xl font-bold text-gray-900 flex items-center justify-center gap-3'>
+                <Truck className='text-amber-600' size={28} />
+                Order Tracking
+              </h3>
+              <p className="text-gray-500 text-sm mt-1">Track the status of your order</p>
             </div>
 
-            <div className='space-y-4'>
-              <div className='flex items-center gap-3'>
-                <img className='w-12 h-12 object-cover rounded' src={selectedOrder.image[0]} alt='' />
-                <div>
-                  <p className='font-medium'>{selectedOrder.name}</p>
-                  <p className='text-sm text-gray-500'>Qty: {selectedOrder.quantity} | Size: {selectedOrder.size}</p>
-                </div>
+            <div className='flex items-center gap-4 mb-8 p-4 bg-amber-50/50 rounded-xl border border-amber-100'>
+              <img className='w-16 h-16 object-cover rounded-lg shadow-sm' src={selectedOrder.image[0]} alt='' />
+              <div>
+                <p className='font-bold text-gray-800 text-lg'>{selectedOrder.name}</p>
+                <p className='text-sm text-gray-600 font-medium'>Qty: {selectedOrder.quantity} <span className="mx-1 text-gray-300">|</span> Size: {selectedOrder.size}</p>
               </div>
+            </div>
 
-              <div className='border-t pt-4'>
-                <div className='space-y-4'>
-                  {[
-                    { status: 'Order Placed', completed: true, date: new Date(Number(selectedOrder.date)).toLocaleDateString() },
-                    { status: 'Packing', completed: ['Packing', 'Shipped', 'Out for delivery', 'Delivered'].includes(selectedOrder.status), date: selectedOrder.status === 'Packing' ? 'In Progress' : '' },
-                    { status: 'Shipped', completed: ['Shipped', 'Out for delivery', 'Delivered'].includes(selectedOrder.status), date: selectedOrder.status === 'Shipped' ? 'In Progress' : '' },
-                    { status: 'Out for delivery', completed: ['Out for delivery', 'Delivered'].includes(selectedOrder.status), date: selectedOrder.status === 'Out for delivery' ? 'In Progress' : '' },
-                    { status: 'Delivered', completed: selectedOrder.status === 'Delivered', date: selectedOrder.status === 'Delivered' ? 'Completed' : '' }
-                  ].map((step, index) => (
-                    <div key={index} className='flex items-center gap-3'>
-                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${step.completed ? 'bg-green-500' : 'bg-gray-300'
-                        }`}>
-                        {step.completed && (
-                          <svg className='w-2.5 h-2.5 text-white' fill='currentColor' viewBox='0 0 20 20'>
-                            <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
-                          </svg>
-                        )}
+            <div className='relative pl-4'>
+              <div className="absolute left-6 top-2 bottom-4 w-0.5 bg-gray-100"></div>
+
+              <div className='space-y-6'>
+                {[
+                  { status: 'Order Placed', icon: Package, date: new Date(Number(selectedOrder.date)).toLocaleDateString() },
+                  { status: 'Packing', icon: Package },
+                  { status: 'Shipped', icon: Truck },
+                  { status: 'Out for delivery', icon: MapPin },
+                  { status: 'Delivered', icon: CheckCircle }
+                ].map((step, index) => {
+                  const currentStepIndex = ['Order Placed', 'Packing', 'Shipped', 'Out for delivery', 'Delivered'].indexOf(selectedOrder.status);
+                  const isCompleted = index <= currentStepIndex;
+                  const isCurrent = index === currentStepIndex;
+
+                  return (
+                    <div key={index} className='flex items-center gap-4 relative z-10'>
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all duration-500 ${isCompleted
+                          ? 'bg-amber-500 border-amber-100 text-white shadow-lg shadow-amber-200'
+                          : 'bg-white border-gray-100 text-gray-300'
+                        } ${isCurrent ? 'scale-110 ring-4 ring-amber-50' : ''}`}>
+                        <step.icon size={isCompleted ? 20 : 18} />
                       </div>
                       <div className='flex-1'>
-                        <p className={`font-medium ${step.completed ? 'text-green-600' : 'text-gray-400'
-                          }`}>{step.status}</p>
-                        {step.date && <p className='text-xs text-gray-500'>{step.date}</p>}
+                        <p className={`font-bold text-lg transition-colors duration-300 ${isCompleted ? 'text-gray-900' : 'text-gray-400'}`}>
+                          {step.status}
+                        </p>
+                        {step.date && <p className='text-xs text-gray-500 font-medium'>{step.date}</p>}
+                        {isCurrent && <p className="text-xs text-amber-600 font-bold mt-0.5 animate-pulse">In Progress...</p>}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  )
+                })}
               </div>
             </div>
+
+            <button onClick={() => setShowTracking(false)} className="w-full mt-8 btn-primary py-3 rounded-xl text-center">
+              Close
+            </button>
           </div>
         </div>
       )}
