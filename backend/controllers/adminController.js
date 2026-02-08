@@ -30,10 +30,26 @@ const getAnalytics = async (req, res) => {
         }))
 
         // 3. Top Selling Products
-        const hotItems = products
-            .slice(0, 5)
-            .map(p => ({ name: p.name, sales: Math.floor(Math.random() * 50) + 10 }))
+        const productSales = {}
+        allOrders.forEach(order => {
+            // Handle items whether it's an array or parsed object
+            let items = order.items
+            if (typeof items === 'string') {
+                try { items = JSON.parse(items) } catch (e) { }
+            }
+            if (Array.isArray(items)) {
+                items.forEach(item => {
+                    if (item.name && item.quantity) {
+                        productSales[item.name] = (productSales[item.name] || 0) + item.quantity
+                    }
+                })
+            }
+        })
+
+        const hotItems = Object.entries(productSales)
+            .map(([name, sales]) => ({ name, sales }))
             .sort((a, b) => b.sales - a.sales)
+            .slice(0, 5)
 
         // 4. Inventory Health (Low stock)
         const lowStockItems = products.filter(p => p.stock < 10)
