@@ -34,7 +34,7 @@ const Product = () => {
       }
     } catch (error) {
       console.error('Error fetching product detail:', error);
-      // Fallback to context products if API fails
+
       const product = products.find((item) => String(item._id) === String(productId));
       if (product) {
         setProductData(product);
@@ -80,10 +80,10 @@ const Product = () => {
 
   return productData ? (
     <div className='pt-10 transition-opacity ease-in duration-500 opacity-100 mx-4'>
-      {/*----------- Product Data-------------- */}
+
       <div className='flex gap-12 sm:gap-12 flex-col sm:flex-row'>
 
-        {/*---------- Product Images------------- */}
+
         <div className='flex-1 flex flex-col-reverse gap-3 sm:flex-row'>
           <div className='flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full'>
             {
@@ -113,7 +113,7 @@ const Product = () => {
           </div>
         </div>
 
-        {/* -------- Product Info ---------- */}
+
         <div className='flex-1 modern-card'>
           <h1 className='font-bold text-3xl mt-2 text-amber-800'>{productData.name}</h1>
           <div className='flex items-center gap-1 mt-3'>
@@ -130,7 +130,7 @@ const Product = () => {
           </div>
           <p className='mt-6 text-4xl font-bold text-orange-600'>{currency}{formatPrice(productData.price)}</p>
 
-          {/* Social Proof Real-time data */}
+
           <SocialProof productId={productData._id} />
 
           <p className='mt-6 text-amber-700 md:w-4/5 leading-relaxed text-lg'>{productData.description}</p>
@@ -195,7 +195,7 @@ const Product = () => {
         </div>
       </div>
 
-      {/* ---------- Description & Review Section ------------- */}
+
       <div className='mt-12 modern-card'>
         <div className='flex overflow-x-auto no-scrollbar border-b border-orange-200'>
           <button
@@ -219,7 +219,7 @@ const Product = () => {
           </div>
         ) : (
           <div className='p-6'>
-            {/* Review Form */}
+
             <div className='mb-10 bg-orange-50 p-6 rounded-2xl border border-orange-100'>
               <h3 className='text-lg font-bold text-amber-800 mb-4 flex items-center gap-2'>
                 <LucideMessageSquare size={20} className='text-orange-600' />
@@ -264,7 +264,7 @@ const Product = () => {
               </form>
             </div>
 
-            {/* Review List */}
+
             <div className='space-y-6'>
               {productData.reviews && productData.reviews.length > 0 ? (
                 productData.reviews.map((rev, index) => (
@@ -299,7 +299,7 @@ const Product = () => {
         )}
       </div>
 
-      {/* --------- display related products ---------- */}
+
 
       <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
 

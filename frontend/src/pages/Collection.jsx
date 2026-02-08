@@ -85,7 +85,6 @@ const Collection = () => {
   return (
     <div className='flex flex-col lg:flex-row gap-8 pt-8 mx-4 animate-fade-in-up'>
 
-      {/* Filter Sidebar */}
       <div className='lg:w-64 flex-shrink-0'>
         <div className='modern-card sticky top-24'>
           <button
@@ -104,7 +103,7 @@ const Collection = () => {
           </button>
 
           <div className={`${showFilter ? 'block' : 'hidden'} lg:block`}>
-            {/* Category Filter */}
+
             <div className='p-4 border-b border-gray-100'>
               <h3 className='font-bold text-amber-800 mb-4 flex items-center gap-2'>
                 <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -129,7 +128,7 @@ const Collection = () => {
               </div>
             </div>
 
-            {/* SubCategory Filter */}
+
             <div className='p-4'>
               <h3 className='font-bold text-amber-800 mb-4 flex items-center gap-2'>
                 <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -157,9 +156,9 @@ const Collection = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+
       <div className='flex-1 min-w-0'>
-        {/* Header */}
+
         <div className='modern-card mb-8'>
           <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6'>
             <div>
@@ -184,7 +183,7 @@ const Collection = () => {
           </div>
         </div>
 
-        {/* Products Grid */}
+
         {filterProducts.length > 0 ? (
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
             {filterProducts.map((item, index) => (

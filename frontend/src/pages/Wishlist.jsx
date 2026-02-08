@@ -27,7 +27,7 @@ const Wishlist = () => {
                                     sizes={item.sizes}
                                     item={item}
                                 />
-                                {/* Dedicated Remove Button */}
+                               
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();
