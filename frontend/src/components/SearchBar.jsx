@@ -10,7 +10,7 @@ const SearchBar = () => {
 
   useEffect(() => {
     if (location.pathname.includes('collection') && showSearch) {
-      // Optional: Focus logic could go here
+     
     }
   }, [location, showSearch])
 

@@ -62,7 +62,7 @@ const ProductItem = (props) => {
             />
             <div className='absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300'></div>
 
-            {/* Quick view badge - always visible on mobile if sm:hidden/block is used correctly, but let's just make it hover for desktop */}
+
             <div className='absolute top-2 left-2 sm:top-3 sm:left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
               <span className='bg-white/90 backdrop-blur-sm text-amber-800 px-2 py-1 rounded-lg text-[10px] sm:text-xs font-bold shadow-sm'>Quick View</span>
             </div>
@@ -85,7 +85,7 @@ const ProductItem = (props) => {
           </div>
         </Link>
 
-        {/* Action buttons - Visible on mobile by default, responsive sizes */}
+
         <div className='absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 transform lg:translate-y-2 lg:group-hover:translate-y-0'>
           <button
             onClick={() => { console.log('Heart clicked for ID:', id); toggleWishlist(id); }}
@@ -103,7 +103,7 @@ const ProductItem = (props) => {
           </button>
         </div>
 
-        {/* Size selector overlay */}
+
         {showSizes && sizes?.length > 0 && (
           <div className='absolute inset-x-2 bottom-2 sm:inset-x-4 sm:bottom-4 glass-effect rounded-xl p-3 sm:p-4 z-20 animate-fade-in-up'>
             <p className='text-[10px] sm:text-sm font-bold text-amber-800 mb-2'>Select Size:</p>

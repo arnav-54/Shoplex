@@ -5,7 +5,7 @@ const Hero = () => {
   return (
     <div className='modern-card mx-4 my-8 overflow-hidden hero-section animate-fade-in-up'>
       <div className='flex flex-col lg:flex-row min-h-[500px] lg:min-h-[600px]'>
-        {/* Hero Left Side */}
+
         <div className='w-full lg:w-1/2 flex items-center justify-center py-12 lg:py-0 bg-gradient-to-br from-orange-50 to-amber-50'>
           <div className='text-center lg:text-left px-6 lg:px-12 max-w-lg'>
             <div className='inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6'>
@@ -53,12 +53,12 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Hero Right Side */}
+
         <div className='w-full lg:w-1/2 relative h-[400px] sm:h-[500px] lg:h-auto overflow-hidden bg-gradient-to-br from-amber-100 to-orange-100'>
           <img className='w-full h-full object-cover transform hover:scale-105 transition-transform duration-700' src={assets.hero_img} alt='Fashion Collection' />
           <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent'></div>
 
-          {/* Floating Cards */}
+
           <div className='absolute top-4 right-4 sm:top-8 sm:right-8 bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 animate-slide-in-right shadow-lg'>
             <div className='flex items-center gap-2 sm:gap-3'>
               <div className='w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0'>

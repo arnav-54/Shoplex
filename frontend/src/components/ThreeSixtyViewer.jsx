@@ -30,7 +30,7 @@ const ThreeSixtyViewer = ({ images = [] }) => {
         lastXRef.current = x;
         velocityRef.current = 0;
 
-        // Stop any ongoing inertia
+        
         if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
 
@@ -39,7 +39,7 @@ const ThreeSixtyViewer = ({ images = [] }) => {
             if (!isDragging) return;
 
             const x = e.touches ? e.touches[0].pageX : e.pageX;
-            const diff = (lastXRef.current - x) * 0.2; // Sensitivity
+            const diff = (lastXRef.current - x) * 0.2; 
 
             velocityRef.current = diff;
             targetFrameRef.current += diff;
@@ -52,11 +52,11 @@ const ThreeSixtyViewer = ({ images = [] }) => {
             if (!isDragging) return;
             setIsDragging(false);
 
-            // Start inertia animation
+            
             const animateInertia = () => {
                 if (Math.abs(velocityRef.current) > 0.01) {
                     targetFrameRef.current += velocityRef.current;
-                    velocityRef.current *= 0.95; // Friction
+                    velocityRef.current *= 0.95; 
                     updateFrame(targetFrameRef.current);
                     rafRef.current = requestAnimationFrame(animateInertia);
                 }
@@ -80,9 +80,9 @@ const ThreeSixtyViewer = ({ images = [] }) => {
         };
     }, [isDragging, totalFrames]);
 
-    // UI Animations simplified (GSAP removed for debugging)
+   
     useEffect(() => {
-        // Simple entry animation logic if needed
+     
     }, []);
 
     return (
@@ -100,13 +100,13 @@ const ThreeSixtyViewer = ({ images = [] }) => {
                     className="w-full h-full object-contain select-none pointer-events-none transition-opacity duration-200"
                 />
 
-                {/* Status Badge */}
+              
                 <div className="three-sixty-badge absolute top-4 left-4 flex items-center gap-2 bg-amber-800 text-white px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">
                     <Zap size={12} className="text-yellow-400 fill-yellow-400" />
                     Interactive 3D Mode
                 </div>
 
-                {/* Fullscreen Toggle */}
+                
                 <button
                     onClick={() => setIsFullScreen(!isFullScreen)}
                     className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-md rounded-xl text-amber-800 hover:bg-amber-800 hover:text-white transition-all shadow-lg z-10"
@@ -114,7 +114,7 @@ const ThreeSixtyViewer = ({ images = [] }) => {
                     {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
                 </button>
 
-                {/* Overlay Hint */}
+             
                 <div className={`absolute inset-0 bg-black/5 flex items-center justify-center transition-opacity duration-500 ${isDragging ? 'opacity-0' : 'opacity-100 group-hover:opacity-0'}`}>
                     <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-2xl flex flex-col items-center gap-2 scale-90 group-hover:scale-110 transition-transform">
                         <Hand className="text-amber-800 animate-bounce" size={32} />
@@ -122,7 +122,7 @@ const ThreeSixtyViewer = ({ images = [] }) => {
                     </div>
                 </div>
 
-                {/* Progress Ring / indicator */}
+                
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-amber-100 shadow-2xl">
                     <div className="flex gap-1.5">
                         {images.map((_, index) => (
