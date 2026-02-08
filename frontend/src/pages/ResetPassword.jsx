@@ -59,7 +59,7 @@ const ResetPassword = () => {
         <div className='min-h-screen flex items-center justify-center py-12 px-4 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50'>
             <div className='modern-card w-full max-w-md animate-fade-in-up'>
                 <form onSubmit={onSubmitHandler} className='space-y-6'>
-                    {/* Header */}
+
                     <div className='text-center pb-4 border-b-2 border-orange-100'>
                         <div className='flex items-center justify-center gap-3 mb-3'>
                             <div className='w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center text-white shadow-lg'>
@@ -74,7 +74,7 @@ const ResetPassword = () => {
                         </p>
                     </div>
 
-                    {/* Password Fields */}
+
                     <div className='space-y-4'>
                         <div className='space-y-2'>
                             <label className='flex items-center gap-2 text-sm font-bold text-amber-800'>
@@ -170,7 +170,7 @@ const ResetPassword = () => {
                         </div>
                     </div>
 
-                    {/* Submit Button */}
+
                     <button
                         type='submit'
                         disabled={isLoading || password !== confirmPassword}
@@ -194,7 +194,7 @@ const ResetPassword = () => {
                         )}
                     </button>
 
-                    {/* Back to Login */}
+
                     <div className='text-center'>
                         <button
                             type='button'

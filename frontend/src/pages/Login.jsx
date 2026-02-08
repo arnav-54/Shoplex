@@ -73,7 +73,7 @@ const Login = () => {
     <div className='min-h-screen flex items-center justify-center py-12 px-4 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50'>
       <div className='modern-card w-full max-w-md animate-fade-in-up'>
         <form onSubmit={onSubmitHandler} className='space-y-6'>
-          {/* Header */}
+
           <div className='text-center pb-4 border-b-2 border-orange-100'>
             <div className='flex items-center justify-center gap-3 mb-3'>
               <div className='w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center text-white shadow-lg'>
@@ -88,7 +88,7 @@ const Login = () => {
             </p>
           </div>
 
-          {/* Form Fields */}
+
           <div className='space-y-4'>
             {currentState === 'Sign Up' && (
               <div className='space-y-2'>
@@ -162,7 +162,7 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Actions */}
+
           <div className='flex justify-between items-center text-sm pt-2'>
             {currentState === 'Login' && (
               <button
@@ -182,7 +182,7 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Submit Button */}
+
           <button
             type='submit'
             disabled={isLoading}
@@ -217,7 +217,7 @@ const Login = () => {
             )}
           </button>
 
-          {/* Privacy Notice */}
+
           <p className='text-center text-xs text-amber-600 pt-2'>
             By continuing, you agree to Shoplex's{' '}
             <button type='button' className='text-orange-600 hover:underline font-semibold'>Terms of Service</button>
