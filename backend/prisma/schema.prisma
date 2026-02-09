@@ -17,6 +17,7 @@ model User {
   password  String
   cartData  Json     @default("{}")
   wishlist  String[] @default([])
+  image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]
