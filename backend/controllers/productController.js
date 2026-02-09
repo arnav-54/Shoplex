@@ -2,7 +2,6 @@ import { v2 as cloudinary } from "cloudinary"
 import prisma from "../config/prisma.js"
 import { sendPriceDropEmail } from "../config/email.js"
 
-// function for add product
 const addProduct = async (req, res) => {
     try {
 
@@ -22,14 +21,14 @@ const addProduct = async (req, res) => {
             })
         )
 
-        // Validate and sanitize sizes input
+       
         let parsedSizes;
         try {
             parsedSizes = JSON.parse(sizes);
             if (!Array.isArray(parsedSizes) || parsedSizes.length === 0) {
                 return res.json({ success: false, message: "Invalid sizes format" });
             }
-            // Validate each size
+       
             parsedSizes = parsedSizes.filter(size =>
                 typeof size === 'string' &&
                 size.length <= 10 &&
@@ -64,7 +63,7 @@ const addProduct = async (req, res) => {
     }
 }
 
-// function for list product
+
 const listProducts = async (req, res) => {
     try {
 
@@ -72,7 +71,7 @@ const listProducts = async (req, res) => {
             where: { isActive: true }
         });
 
-        // Convert for frontend compatibility
+      
         const formattedProducts = products.map(product => ({
             _id: String(product.id),
             name: product.name,
@@ -95,7 +94,7 @@ const listProducts = async (req, res) => {
     }
 }
 
-// function for removing product
+
 const removeProduct = async (req, res) => {
     try {
 
@@ -108,12 +107,12 @@ const removeProduct = async (req, res) => {
     }
 }
 
-// function for updating product
+
 const updateProduct = async (req, res) => {
     try {
         const { id, name, description, price, category, subCategory, sizes, bestseller, threeSixtyImages } = req.body
 
-        // Get existing product to check for price drop
+      
         const oldProduct = await prisma.product.findUnique({ where: { id: String(id) } })
 
         if (!oldProduct) {
@@ -141,11 +140,10 @@ const updateProduct = async (req, res) => {
             data: updatedData
         })
 
-        // Price Drop Alert Logic
         if (newPrice < oldPrice) {
             console.log(`Price drop detected for ${name}: ${oldPrice} -> ${newPrice}`)
 
-            // Find users who have this product in their wishlist
+            
             const usersWithProduct = await prisma.user.findMany({
                 where: {
                     wishlist: {
@@ -159,7 +157,7 @@ const updateProduct = async (req, res) => {
 
             console.log(`Found ${usersWithProduct.length} users with this product in wishlist`)
 
-            // Send emails concurrently
+         
             usersWithProduct.forEach(user => {
                 sendPriceDropEmail(user.email, name, oldPrice, newPrice)
             })
@@ -173,7 +171,7 @@ const updateProduct = async (req, res) => {
     }
 }
 
-// function for single product info
+
 const singleProduct = async (req, res) => {
     try {
         const { productId } = req.body
@@ -219,12 +217,12 @@ const singleProduct = async (req, res) => {
     }
 }
 
-// function for add product review
+
 const addProductReview = async (req, res) => {
     try {
         const { productId, rating, comment, userId } = req.body
 
-        // Fetch user name since we only have userId from token
+       
         const user = await prisma.user.findUnique({ where: { id: userId } })
 
         if (!user) {

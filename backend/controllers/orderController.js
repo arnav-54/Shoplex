@@ -2,11 +2,11 @@ import prisma from "../config/prisma.js";
 import Stripe from 'stripe'
 import razorpay from 'razorpay'
 
-// global variables
+
 const currency = 'inr'
 const deliveryCharge = 10
 
-// gateway initialize
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 const razorpayInstance = new razorpay({
@@ -14,7 +14,7 @@ const razorpayInstance = new razorpay({
     key_secret : process.env.RAZORPAY_KEY_SECRET,
 })
 
-// Placing orders using COD Method
+
 const placeOrder = async (req,res) => {
     
     try {
@@ -45,14 +45,14 @@ const placeOrder = async (req,res) => {
 
 }
 
-// Placing orders using Stripe Method
+
 const placeOrderStripe = async (req,res) => {
     try {
         
         const { userId, items, amount, address} = req.body
         const { origin } = req.headers;
         
-        // Validate origin to prevent SSRF
+       
         const allowedOrigins = [
             process.env.FRONTEND_URL || 'http://localhost:5173',
             'http://localhost:3000',
@@ -110,7 +110,7 @@ const placeOrderStripe = async (req,res) => {
     }
 }
 
-// Verify Stripe 
+
 const verifyStripe = async (req,res) => {
 
     const { orderId, success, userId } = req.body
@@ -132,7 +132,7 @@ const verifyStripe = async (req,res) => {
 
 }
 
-// Placing orders using Razorpay Method
+
 const placeOrderRazorpay = async (req,res) => {
     try {
         
@@ -191,7 +191,7 @@ const verifyRazorpay = async (req,res) => {
 }
 
 
-// All Orders data for Admin Panel
+
 const allOrders = async (req,res) => {
 
     try {
@@ -206,7 +206,7 @@ const allOrders = async (req,res) => {
 
 }
 
-// User Order Data For Forntend
+
 const userOrders = async (req,res) => {
     try {
         
@@ -221,7 +221,7 @@ const userOrders = async (req,res) => {
     }
 }
 
-// update order status from Admin Panel
+
 const updateStatus = async (req,res) => {
     try {
         
