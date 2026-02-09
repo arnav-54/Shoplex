@@ -71,7 +71,7 @@ const Footer = () => {
         <div className='flex justify-center items-center gap-2 mb-2'>
           <span className='text-orange-200 font-semibold'>Made with care by Shoplex Team</span>
         </div>
-        <p className='text-orange-100 text-sm'>Copyright 2025 © Shoplex - All Rights Reserved.</p>
+        <p className='text-orange-100 text-sm'>Copyright 2026 © Shoplex - All Rights Reserved.</p>
       </div>
 
     </div>

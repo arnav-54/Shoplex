@@ -26,7 +26,7 @@ const SeasonalBanner = () => {
           </div>
         </div>
         
-        {/* Decorative elements */}
+       
         <div className='absolute top-4 left-4 text-2xl opacity-50'>🐻</div>
         <div className='absolute top-8 right-8 text-2xl opacity-50'>🍯</div>
         <div className='absolute bottom-4 left-8 text-2xl opacity-50'>🌲</div>
