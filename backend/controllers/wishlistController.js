@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-// Add product to wishlist
 const addToWishlist = async (req, res) => {
     try {
         const { userId, productId } = req.body
@@ -11,7 +10,6 @@ const addToWishlist = async (req, res) => {
         const user = await prisma.user.findUnique({ where: { id: userId } })
         if (!user) return res.json({ success: false, message: "User not found" })
 
-        // Check if already in wishlist using string comparison
         const isAlreadyIn = user.wishlist.some(id => id.toString() === productId.toString())
 
         if (!isAlreadyIn) {
@@ -36,7 +34,7 @@ const addToWishlist = async (req, res) => {
     }
 }
 
-// Remove product from wishlist
+
 const removeFromWishlist = async (req, res) => {
     try {
         const { userId, productId } = req.body
@@ -71,7 +69,6 @@ const removeFromWishlist = async (req, res) => {
     }
 }
 
-// Get user wishlist
 const getUserWishlist = async (req, res) => {
     try {
         const { userId } = req.body
@@ -89,7 +86,6 @@ const getUserWishlist = async (req, res) => {
             return res.json({ success: true, wishlist: [] })
         }
 
-        // Fetch products. Prisma handles the String -> ObjectId conversion for 'in'
         const wishlistProducts = await prisma.product.findMany({
             where: {
                 id: { in: user.wishlist }

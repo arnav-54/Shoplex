@@ -1,22 +1,22 @@
 import prisma from "../config/prisma.js"
 
-// add products to user cart
-const addToCart = async (req,res) => {
+
+const addToCart = async (req, res) => {
     try {
-        
+
         const { userId, itemId, size } = req.body
-        
-        // Input validation
+
+
         if (!userId || !itemId || !size) {
             return res.json({ success: false, message: "Missing required fields" })
         }
-        
-        // Validate itemId format (should be string/number)
+
+
         if (typeof itemId !== 'string' && typeof itemId !== 'number') {
             return res.json({ success: false, message: "Invalid item ID" })
         }
-        
-        // Validate size (should be string)
+
+
         if (typeof size !== 'string' || size.length > 10) {
             return res.json({ success: false, message: "Invalid size" })
         }
@@ -28,14 +28,14 @@ const addToCart = async (req,res) => {
             console.log('Database error:', error)
             return res.json({ success: false, message: "Please login again" })
         }
-        
+
         if (!userData) {
             return res.json({ success: false, message: "User not found. Please login again." })
         }
-        
+
         let cartData = userData.cartData || {};
-        
-        // Sanitize itemId to prevent prototype pollution
+
+
         const sanitizedItemId = String(itemId).replace(/[^a-zA-Z0-9]/g, '');
         const sanitizedSize = String(size).replace(/[^a-zA-Z0-9]/g, '');
 
@@ -61,18 +61,16 @@ const addToCart = async (req,res) => {
     }
 }
 
-// update user cart
-const updateCart = async (req,res) => {
+
+const updateCart = async (req, res) => {
     try {
-        
-        const { userId ,itemId, size, quantity } = req.body
-        
-        // Input validation
+
+        const { userId, itemId, size, quantity } = req.body
+
         if (!userId || !itemId || !size || quantity === undefined) {
             return res.json({ success: false, message: "Missing required fields" })
         }
-        
-        // Validate quantity
+
         if (typeof quantity !== 'number' || quantity < 0 || quantity > 100) {
             return res.json({ success: false, message: "Invalid quantity" })
         }
@@ -84,17 +82,16 @@ const updateCart = async (req,res) => {
             console.log('Database error:', error)
             return res.json({ success: false, message: "Please login again" })
         }
-        
+
         if (!userData) {
             return res.json({ success: false, message: "User not found. Please login again." })
         }
-        
+
         let cartData = userData.cartData || {};
-        
-        // Sanitize inputs
+
         const sanitizedItemId = String(itemId).replace(/[^a-zA-Z0-9]/g, '');
         const sanitizedSize = String(size).replace(/[^a-zA-Z0-9]/g, '');
-        
+
         if (!cartData[sanitizedItemId]) {
             cartData[sanitizedItemId] = {};
         }
@@ -110,13 +107,12 @@ const updateCart = async (req,res) => {
     }
 }
 
-// get user cart data
-const getUserCart = async (req,res) => {
+const getUserCart = async (req, res) => {
 
     try {
-        
+
         const { userId } = req.body
-        
+
         let userData;
         try {
             userData = await prisma.user.findUnique({ where: { id: String(userId) } })
@@ -124,11 +120,11 @@ const getUserCart = async (req,res) => {
             console.log('Database error:', error)
             return res.json({ success: false, message: "Please login again" })
         }
-        
+
         if (!userData) {
             return res.json({ success: false, message: "User not found. Please login again." })
         }
-        
+
         let cartData = userData.cartData || {};
 
         res.json({ success: true, cartData, timestamp: Date.now() })

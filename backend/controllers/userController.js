@@ -7,7 +7,6 @@ const createToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 }
 
-// Route for user login
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -18,7 +17,6 @@ const loginUser = async (req, res) => {
 
         const user = await prisma.user.findUnique({ where: { email } });
         
-        // Always perform bcrypt comparison to prevent timing attacks
         const dummyHash = '$2b$10$dummyhashtopreventtimingattacks';
         const userPassword = user ? user.password : dummyHash;
         const isMatch = await bcrypt.compare(password, userPassword);
@@ -36,7 +34,7 @@ const loginUser = async (req, res) => {
     }
 }
 
-// Route for user register
+
 const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -77,7 +75,7 @@ const registerUser = async (req, res) => {
     }
 }
 
-// Route for admin login
+
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -95,7 +93,7 @@ const adminLogin = async (req, res) => {
     }
 }
 
-// Route for getting user profile
+
 const getUserProfile = async (req, res) => {
     try {
         const { userId } = req.body;
@@ -117,7 +115,7 @@ const getUserProfile = async (req, res) => {
     }
 }
 
-// Route for updating user profile
+
 const updateUserProfile = async (req, res) => {
     try {
         const { userId, name } = req.body;
