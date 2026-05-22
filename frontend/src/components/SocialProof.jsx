@@ -23,24 +23,24 @@ const SocialProof = ({ productId }) => {
     }, [productId]);
 
     return (
-        <div className="flex flex-col gap-3 my-4 animate-fade-in-up">
-          
-            <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium border border-blue-100 w-fit">
-                <LucideEye size={16} className="animate-pulse" />
-                <span>{viewerCount} {viewerCount === 1 ? 'person is' : 'people are'} viewing this right now</span>
+        <div className="flex flex-wrap gap-2.5 my-5 animate-fade-in-up">
+            {/* Viewer Count Indicator */}
+            <div className="flex items-center gap-2 bg-[var(--surface-elevated)] text-[var(--ink-soft)] px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] transition-all hover:border-[var(--ink-muted)]">
+                <LucideEye size={14} className="text-blue-500 animate-pulse" />
+                <span>{viewerCount} {viewerCount === 1 ? 'person' : 'people'} active now</span>
             </div>
 
-           
-            <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-medium border border-green-100 w-fit">
-                <LucideShoppingCart size={16} />
-                <span>Sold {recentSales} times in the last hour</span>
+            {/* Recent Sales Indicator */}
+            <div className="flex items-center gap-2 bg-[var(--surface-elevated)] text-[var(--ink-soft)] px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] transition-all hover:border-[var(--ink-muted)]">
+                <LucideShoppingCart size={14} className="text-emerald-500" />
+                <span>Sold {recentSales} times recently</span>
             </div>
 
-        
+            {/* Low Stock Indicator */}
             {isLowStock && (
-                <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1.5 rounded-full text-sm font-bold border border-red-100 w-fit animate-bounce">
-                    <LucideZap size={16} fill="currentColor" />
-                    <span>HURRY! Only 2 left in stock!</span>
+                <div className="flex items-center gap-2 bg-[var(--accent-soft)] text-[var(--accent)] px-3.5 py-1.5 rounded-lg text-xs font-bold border border-[var(--accent-muted)] animate-pulse">
+                    <LucideZap size={14} fill="currentColor" />
+                    <span>Selling fast — low stock</span>
                 </div>
             )}
         </div>
