@@ -1,36 +1,55 @@
 import React from 'react'
+import { FashionCharacter } from './Illustrations'
 
 const SeasonalBanner = () => {
   return (
-    <div className='mx-4 my-8'>
-      <div className='bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 rounded-3xl p-8 text-center relative overflow-hidden'>
-        <div className='absolute inset-0 bg-gradient-to-r from-orange-400/20 to-yellow-400/20'></div>
-        <div className='relative z-10'>
-          <div className='flex justify-center items-center gap-4 mb-4'>
-            <span className='text-4xl animate-bounce'>🍂</span>
-            <h2 className='text-3xl font-bold text-white'>Autumn Collection</h2>
-            <span className='text-4xl animate-bounce'>🍂</span>
-          </div>
-          <p className='text-white/90 text-lg mb-6 max-w-2xl mx-auto'>
-            Embrace the cozy season with our warm and comfortable autumn essentials. 
-            Perfect for those crisp forest walks and fireside evenings! 🔥
-          </p>
-          <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-            <button className='bg-white text-orange-600 px-8 py-3 rounded-full font-bold hover:bg-orange-50 transition-colors flex items-center gap-2'>
-              <span>🛍️</span>
-              Shop Autumn Collection
-            </button>
-            <div className='bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 text-white font-semibold'>
-              🏷️ Up to 30% OFF
+    <div className='my-12 mx-4 sm:mx-0'>
+      <div className='relative bg-[var(--surface-dark)] text-white rounded-2xl p-8 sm:p-12 overflow-hidden border border-[var(--ink)] shadow-lg'>
+        {/* Decorative subtle ambient lights */}
+        <div className='absolute -top-24 -left-24 w-60 h-60 bg-[var(--accent)] rounded-full filter blur-[80px] opacity-25'></div>
+        <div className='absolute -bottom-24 -right-24 w-60 h-60 bg-[var(--gold)] rounded-full filter blur-[80px] opacity-25'></div>
+
+        <div className='relative z-10 grid md:grid-cols-[1fr_auto] gap-8 items-center max-w-5xl mx-auto'>
+          <div className='text-left space-y-6'>
+            <div className='inline-flex items-center gap-2 bg-[var(--accent)] text-white px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm'>
+              🏷️ Limited Edition
+            </div>
+            
+            <h2 className='text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight text-white'>
+              Cozy Autumn <br />
+              <span className='font-editorial italic font-normal text-[var(--accent)] capitalize text-4xl sm:text-5xl lg:text-6xl'>Essentials</span>
+            </h2>
+            
+            <p className='text-sm sm:text-base text-white/70 leading-relaxed max-w-xl'>
+              Embrace the transition of seasons with our new knitwear, jackets, and thermal wear collection. Perfect for those crisp morning walks and cozy fireside evenings.
+            </p>
+            
+            <div className='flex flex-wrap gap-4 items-center pt-2'>
+              <button 
+                onClick={() => {
+                  const el = document.getElementById('latest-collection');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className='btn-accent px-8 py-3.5 text-sm font-bold shadow-md hover:shadow-lg'
+              >
+                Explore Collection
+              </button>
+              <div className='border border-[var(--border-strong)] px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold tracking-wider text-[var(--gold)] uppercase bg-[var(--surface-dark)]'>
+                ✨ Save up to 30% OFF
+              </div>
             </div>
           </div>
+          
+          {/* Elegant cartoon illustration on the right */}
+          <div className='flex justify-center md:justify-end select-none relative'>
+            <div className='relative bg-[var(--surface)] p-4 rounded-xl border border-[var(--border-strong)] shadow-md animate-float'>
+              <FashionCharacter size={150} />
+            </div>
+            {/* Tiny stars floating around */}
+            <div className='absolute -top-4 right-4 text-xl animate-gentle-pulse'>✨</div>
+            <div className='absolute -bottom-2 -left-4 text-lg animate-wiggle'>🍁</div>
+          </div>
         </div>
-        
-       
-        <div className='absolute top-4 left-4 text-2xl opacity-50'>🐻</div>
-        <div className='absolute top-8 right-8 text-2xl opacity-50'>🍯</div>
-        <div className='absolute bottom-4 left-8 text-2xl opacity-50'>🌲</div>
-        <div className='absolute bottom-8 right-4 text-2xl opacity-50'>🏠</div>
       </div>
     </div>
   )
