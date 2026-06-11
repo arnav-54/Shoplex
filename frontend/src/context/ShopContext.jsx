@@ -14,6 +14,7 @@ const ShopContextProvider = (props) => {
     console.log('Environment variables:', import.meta.env);
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
+    const [isCartOpen, setCartOpen] = useState(false);
     const [cartItems, setCartItems] = useState({});
     const [wishlist, setWishlist] = useState([]);
     const [products, setProducts] = useState([]);
@@ -95,7 +96,7 @@ const ShopContextProvider = (props) => {
         console.log('Adding to cart:', { itemId, size, token: !!token });
 
         if (!size) {
-            toast.error('🐻 Please select a size first!');
+            toast.error('Please select a size first');
             return;
         }
 
@@ -118,7 +119,7 @@ const ShopContextProvider = (props) => {
 
         if (token) {
             
-            toast.success('🛒 Added to cart! Check your cozy collection.');
+            toast.success('Added to cart successfully.');
 
             try {
                 console.log('Sending to backend:', { itemId, size });
@@ -136,9 +137,10 @@ const ShopContextProvider = (props) => {
             }
         } else {
             console.log('No token, cart saved locally only');
-            toast.success('🛒 Added to cart! Check your cozy collection.');
+            toast.success('Added to cart successfully.');
         }
 
+        setCartOpen(true);
     }
 
     const getCartCount = () => {
@@ -298,7 +300,7 @@ const ShopContextProvider = (props) => {
             const endpoint = isWishlisted ? '/api/wishlist/remove' : '/api/wishlist/add'
 
           
-            const message = isWishlisted ? '💔 Removed from wishlist' : '❤️ Added to wishlist';
+            const message = isWishlisted ? 'Removed from wishlist' : 'Added to wishlist';
             toast.success(message);
 
             console.log('Toggling wishlist:', { productId, isWishlisted: !!isWishlisted, endpoint, wishlistLength: wishlist?.length });
@@ -361,6 +363,7 @@ const ShopContextProvider = (props) => {
     const value = {
         products, currency, currencyCode, delivery_fee,
         search, setSearch, showSearch, setShowSearch,
+        isCartOpen, setCartOpen,
         cartItems, addToCart, setCartItems,
         getCartCount, updateQuantity, updateCartItemSize,
         getCartAmount, navigate, backendUrl,
