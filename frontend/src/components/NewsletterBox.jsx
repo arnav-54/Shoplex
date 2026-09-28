@@ -1,15 +1,31 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { toast } from 'react-toastify'
 import { MailCharacter } from './Illustrations'
+import { ShopContext } from '../context/ShopContext'
+import axios from 'axios'
 
 const NewsletterBox = () => {
   const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { backendUrl } = useContext(ShopContext)
 
-  const onSubmitHandler = (event) => {
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
-    if (email) {
-      toast.success('Thank you for subscribing! Check your email for the 20% discount code.')
-      setEmail('')
+    if (!email) return;
+
+    setLoading(true);
+    try {
+      const response = await axios.post(backendUrl + '/api/newsletter/subscribe', { email });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        setEmail('');
+      } else {
+        toast.info(response.data.message);
+      }
+    } catch (error) {
+      toast.error('Subscription failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -45,12 +61,14 @@ const NewsletterBox = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
             />
             <button 
               type='submit' 
-              className='btn-primary font-bold text-sm uppercase px-6 py-3.5 tracking-wider'
+              disabled={loading}
+              className='btn-primary font-bold text-sm uppercase px-6 py-3.5 tracking-wider disabled:opacity-50 disabled:cursor-not-allowed'
             >
-              Subscribe
+              {loading ? 'Subscribing...' : 'Subscribe'}
             </button>
           </form>
           <p className='text-xs text-[var(--ink-muted)]'>

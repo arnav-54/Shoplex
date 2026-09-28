@@ -82,6 +82,15 @@ const Collection = () => {
     sortProduct();
   }, [sortType])
 
+  // Listen for category navigation from CategoryCards on the homepage
+  useEffect(() => {
+    const handler = (e) => {
+      setCategory([e.detail])
+    }
+    window.addEventListener('setCategory', handler)
+    return () => window.removeEventListener('setCategory', handler)
+  }, [])
+
   return (
     <div className='flex flex-col lg:flex-row gap-8 pt-8 mx-4 animate-fade-in-up page-transition'>
 
@@ -194,6 +203,7 @@ const Collection = () => {
                 price={item.price}
                 image={item.image}
                 sizes={item.sizes}
+                stock={item.stock}
               />
             ))}
           </div>

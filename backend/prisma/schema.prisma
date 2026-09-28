@@ -74,7 +74,31 @@ model Order {
   payment       Boolean  @default(false)
   date          String
   orderNumber   String?
+  couponCode    String?
+  discount      Float?
   createdAt     DateTime @default(now())
 
   @@map("orders")
+}
+
+model Subscriber {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+
+  @@map("subscribers")
+}
+
+model Coupon {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  code            String    @unique
+  discountPercent Float
+  minOrderAmount  Float     @default(0)
+  maxUses         Int       @default(100)
+  currentUses     Int       @default(0)
+  expiresAt       DateTime?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+
+  @@map("coupons")
 }

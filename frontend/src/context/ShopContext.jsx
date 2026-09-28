@@ -27,6 +27,13 @@ const ShopContextProvider = (props) => {
     const [rates, setRates] = useState({ INR: 1 });
     const navigate = useNavigate();
 
+    const logout = () => {
+        localStorage.removeItem('token');
+        setToken('');
+        setCartItems({});
+        setWishlist([]);
+    };
+
     const currencySymbols = {
         INR: '₹',
         USD: '$',
@@ -118,7 +125,6 @@ const ShopContextProvider = (props) => {
         setCartItems(cartData);
 
         if (token) {
-            
             toast.success('Added to cart successfully.');
 
             try {
@@ -126,7 +132,11 @@ const ShopContextProvider = (props) => {
                 const response = await axios.post(backendUrl + '/api/cart/add', { itemId, size }, { headers: { Authorization: `Bearer ${token}` } })
                 console.log('Backend response:', response.data);
                 if (!response.data.success) {
-                    
+                    if (response.data.message === 'Invalid token' || response.data.message === 'Not Authorized Login Again') {
+                        logout();
+                        toast.error('Session expired. Please login again.');
+                        return;
+                    }
                     toast.error(response.data.message || 'Failed to sync with server');
                     getUserCart(token);
                 }
@@ -266,14 +276,14 @@ const ShopContextProvider = (props) => {
 
     const getUserCart = async (token) => {
         try {
-
             const response = await axios.post(backendUrl + '/api/cart/get', {}, { headers: { Authorization: `Bearer ${token}` } })
             if (response.data.success) {
                 setCartItems(response.data.cartData)
+            } else if (response.data.message === 'Invalid token' || response.data.message === 'Not Authorized Login Again') {
+                logout();
             }
         } catch (error) {
             console.log(error)
-            toast.error(error.message)
         }
     }
 
@@ -314,6 +324,11 @@ const ShopContextProvider = (props) => {
                
                 await getWishlist(token)
             } else {
+                if (response.data.message === 'Invalid token' || response.data.message === 'Not Authorized Login Again') {
+                    logout();
+                    toast.error('Session expired. Please login again.');
+                    return;
+                }
                 toast.error(response.data.message)
                 
                 await getWishlist(token)
@@ -329,6 +344,8 @@ const ShopContextProvider = (props) => {
             const response = await axios.post(backendUrl + '/api/wishlist/get', {}, { headers: { Authorization: `Bearer ${token}` } })
             if (response.data.success) {
                 setWishlist(response.data.wishlist)
+            } else if (response.data.message === 'Invalid token' || response.data.message === 'Not Authorized Login Again') {
+                logout();
             }
         } catch (error) {
             console.log(error)
@@ -367,7 +384,7 @@ const ShopContextProvider = (props) => {
         cartItems, addToCart, setCartItems,
         getCartCount, updateQuantity, updateCartItemSize,
         getCartAmount, navigate, backendUrl,
-        setToken, token,
+        setToken, token, logout,
         wishlist, toggleWishlist, getWishlist,
         rates, setCurrencyCode, setCurrency, formatPrice, currencySymbols
     }

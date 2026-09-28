@@ -80,10 +80,11 @@ const List = ({ token }) => {
 
       <div className='bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden'>
         {/* ------- Table Header ---------- */}
-        <div className='hidden md:grid grid-cols-[0.8fr_2.5fr_1fr_1fr_0.8fr] items-center bg-gray-50 border-b border-gray-100 p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+        <div className='hidden md:grid grid-cols-[0.8fr_2.2fr_1fr_0.8fr_0.8fr_0.8fr] items-center bg-gray-50 border-b border-gray-100 p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider'>
           <span>Image</span>
           <span>Product Details</span>
           <span>Category</span>
+          <span>Stock</span>
           <span>Price</span>
           <span className='text-center'>Actions</span>
         </div>
@@ -93,7 +94,7 @@ const List = ({ token }) => {
           {filteredList.map((item, index) => (
             <div key={index} className='group hover:bg-gray-50 transition-colors'>
               {/* Desktop View */}
-              <div className='hidden md:grid grid-cols-[0.8fr_2.5fr_1fr_1fr_0.8fr] items-center gap-4 p-4'>
+              <div className='hidden md:grid grid-cols-[0.8fr_2.2fr_1fr_0.8fr_0.8fr_0.8fr] items-center gap-4 p-4'>
                 <div className='flex items-center justify-center'>
                   <div className='relative overflow-hidden rounded-xl border border-gray-200 group-hover:border-amber-200 transition-colors shadow-sm w-16 h-16'>
                     <img className='w-full h-full object-cover' src={item.image[0]} alt={item.name} />
@@ -109,6 +110,22 @@ const List = ({ token }) => {
                   <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200'>
                     {item.category}
                   </span>
+                </div>
+
+                <div>
+                  {item.stock === 0 ? (
+                    <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200'>
+                      Out
+                    </span>
+                  ) : item.stock <= 5 ? (
+                    <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 animate-pulse'>
+                      {item.stock} Left
+                    </span>
+                  ) : (
+                    <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200'>
+                      {item.stock}
+                    </span>
+                  )}
                 </div>
 
                 <div>
@@ -145,9 +162,24 @@ const List = ({ token }) => {
                       <p className='font-mono font-bold text-amber-600'>{currency}{item.price}</p>
                     </div>
                     <p className='text-xs text-gray-500 mt-1 line-clamp-1'>{item.description}</p>
-                    <span className='inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 uppercase tracking-widest'>
-                      {item.category}
-                    </span>
+                    <div className='flex items-center gap-2 mt-2'>
+                      <span className='inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 uppercase tracking-widest'>
+                        {item.category}
+                      </span>
+                      {item.stock === 0 ? (
+                        <span className='inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600 uppercase tracking-wider'>
+                          Out of Stock
+                        </span>
+                      ) : item.stock <= 5 ? (
+                        <span className='inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-600 uppercase tracking-wider animate-pulse'>
+                          {item.stock} Left
+                        </span>
+                      ) : (
+                        <span className='inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-600 uppercase tracking-wider'>
+                          Stock: {item.stock}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className='flex justify-end gap-3 mt-3'>
                     <Link to={`/admin/edit/${item._id}`} className='text-sm font-medium text-amber-600 flex items-center gap-1'>

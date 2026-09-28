@@ -520,6 +520,11 @@ a.active hr {
   100% { background-position: -200% 0; }
 }
 
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
 
 /* ═══════════════════════════════════════
    ADMIN TABLE STYLES

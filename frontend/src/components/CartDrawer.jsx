@@ -60,13 +60,47 @@ const CartDrawer = () => {
           </div>
           <button 
             onClick={() => setCartOpen(false)}
-            className='w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[var(--surface)] transition-colors border border-[var(--border)]'
+            className='p-2 rounded-lg hover:bg-[var(--surface)] text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors'
+            aria-label="Close cart"
           >
-            <svg className='w-5 h-5 text-[var(--ink)]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.8} d='M6 18L18 6M6 6l12 12' />
+            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
             </svg>
           </button>
         </div>
+
+        {/* Free Shipping Progress Bar */}
+        {(() => {
+          const subtotal = getCartAmount();
+          const target = 999;
+          const remaining = Math.max(0, target - subtotal);
+          const percent = Math.min(100, Math.round((subtotal / target) * 100));
+
+          return (
+            <div className='px-6 py-3.5 bg-[var(--surface-dark)] text-white border-b border-[var(--ink)] space-y-2'>
+              <div className='flex items-center justify-between text-xs font-semibold'>
+                {remaining > 0 ? (
+                  <span>
+                    Add <strong className='text-[var(--gold)] font-bold'>{currency}{formatPrice(remaining)}</strong> more for <span className='text-[var(--accent)] font-bold'>FREE Shipping</span> 🚚
+                  </span>
+                ) : (
+                  <span className='text-emerald-400 font-bold flex items-center gap-1.5'>
+                    ✨ You've unlocked FREE Express Shipping!
+                  </span>
+                )}
+                <span className='text-white/60 font-mono text-[11px]'>{percent}%</span>
+              </div>
+              <div className='w-full h-2 bg-white/15 rounded-full overflow-hidden'>
+                <div 
+                  className={`h-full transition-all duration-500 rounded-full ${
+                    remaining === 0 ? 'bg-emerald-400' : 'bg-gradient-to-r from-[var(--accent)] to-[var(--gold)]'
+                  }`}
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Scrollable Items */}
         <div className='flex-1 overflow-y-auto p-6 space-y-5 no-scrollbar'>

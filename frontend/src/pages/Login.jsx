@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -63,9 +64,12 @@ const Login = () => {
     }
   }
 
+  const location = useLocation();
+  const returnTo = new URLSearchParams(location.search).get('returnTo');
+
   useEffect(() => {
     if (token) {
-      navigate('/')
+      navigate(returnTo || '/')
     }
   }, [token])
 
@@ -220,9 +224,7 @@ const Login = () => {
 
           <p className='text-center text-xs text-[var(--ink-muted)] leading-relaxed'>
             By continuing, you agree to Shoplex's{' '}
-            <button type='button' className='text-[var(--accent)] hover:underline font-semibold'>Terms of Service</button>
-            {' '}and{' '}
-            <button type='button' className='text-[var(--accent)] hover:underline font-semibold'>Privacy Policy</button>
+            <button type='button' onClick={() => navigate('/terms')} className='text-[var(--accent)] hover:underline font-semibold'>Terms of Service</button>
           </p>
         </form>
       </div>

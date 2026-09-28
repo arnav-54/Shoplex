@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { LucideHeart, LucideShoppingBag } from 'lucide-react'
 
 const ProductItem = (props) => {
-  const { image, name, price, sizes } = props;
+  const { image, name, price, sizes, stock } = props;
   const id = props.id || props._id || props.item?._id || props.item?.id;
 
   const { currency, addToCart, formatPrice, toggleWishlist, wishlist } = useContext(ShopContext);
@@ -43,6 +43,7 @@ const ProductItem = (props) => {
 
     try {
       const size = selectedSize || sizes?.[0] || 'M';
+      if (stock === 0) return;
       await addToCart(id, size);
       setShowSizes(false);
       setSelectedSize('');
@@ -64,12 +65,28 @@ const ProductItem = (props) => {
           />
           <div className='absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
 
-          {/* New / Sale Badge */}
+          {/* New / Sale / Out of Stock Badge */}
           <div className='absolute top-3 left-3'>
-            <span className='bg-[var(--accent)] text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded shadow-sm'>
-              New
-            </span>
+            {stock === 0 ? (
+              <span className='bg-red-500 text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded shadow-sm'>
+                Sold Out
+              </span>
+            ) : stock !== undefined && stock <= 5 ? (
+              <span className='bg-amber-500 text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded shadow-sm'>
+                Only {stock} left
+              </span>
+            ) : (
+              <span className='bg-[var(--accent)] text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded shadow-sm'>
+                New
+              </span>
+            )}
           </div>
+          {/* Out of stock overlay */}
+          {stock === 0 && (
+            <div className='absolute inset-0 bg-white/60 flex items-center justify-center z-[1]'>
+              <span className='text-sm font-bold text-[var(--ink-muted)] uppercase tracking-wider'>Out of Stock</span>
+            </div>
+          )}
         </div>
 
         {/* Product Details */}

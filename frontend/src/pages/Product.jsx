@@ -6,14 +6,15 @@ import RelatedProducts from '../components/RelatedProducts';
 import { toast } from 'react-toastify';
 import SocialProof from '../components/SocialProof';
 import FitFinder from '../components/FitFinder';
-import { LucideHeart, LucideMove3d, LucideImage, LucideShoppingBag, LucideStar, LucideMessageSquare } from 'lucide-react';
+import SizeChartModal from '../components/SizeChartModal';
+import PincodeChecker from '../components/PincodeChecker';
+import { LucideHeart, LucideMove3d, LucideImage, LucideShoppingBag, LucideStar, LucideMessageSquare, LucideRuler } from 'lucide-react';
 import ThreeSixtyViewer from '../components/ThreeSixtyViewer';
 import axios from 'axios';
 
 const Product = () => {
 
   const { productId } = useParams();
-  console.log('Product page loaded with ID:', productId);
   const { products, currency, addToCart, wishlist, toggleWishlist, formatPrice, backendUrl, token } = useContext(ShopContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState('')
@@ -24,6 +25,7 @@ const Product = () => {
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [showFitFinder, setShowFitFinder] = useState(false)
+  const [showSizeChart, setShowSizeChart] = useState(false)
 
   const isWishlisted = wishlist && wishlist.find(item => item && item._id && item._id.toString() === productId?.toString())
 
@@ -36,7 +38,6 @@ const Product = () => {
       }
     } catch (error) {
       console.error('Error fetching product detail:', error);
-
       const product = products.find((item) => String(item._id) === String(productId));
       if (product) {
         setProductData(product);
@@ -156,7 +157,24 @@ const Product = () => {
             )}
           </div>
 
-          {/* Social proof proof widgets */}
+          {/* Stock Status */}
+          {productData.stock !== undefined && (
+            <div className='mt-1'>
+              {productData.stock === 0 ? (
+                <span className='inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 text-xs font-bold uppercase tracking-wider rounded-full border border-red-100'>
+                  <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' /></svg>
+                  Out of Stock
+                </span>
+              ) : productData.stock <= 5 ? (
+                <span className='inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 text-xs font-bold uppercase tracking-wider rounded-full border border-amber-100 animate-pulse'>
+                  <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z' /></svg>
+                  Only {productData.stock} left!
+                </span>
+              ) : null}
+            </div>
+          )}
+
+          {/* Social proof widgets */}
           <SocialProof productId={productData._id} />
 
           <p className='text-[var(--ink-soft)] leading-relaxed text-sm sm:text-base border-t border-[var(--border)] pt-5'>
@@ -169,15 +187,25 @@ const Product = () => {
               <p className='font-bold text-xs uppercase tracking-wider text-[var(--ink)]'>
                 Select Size
               </p>
-              <button 
-                onClick={() => setShowFitFinder(true)}
-                className='text-xs text-[var(--accent)] font-semibold hover:underline flex items-center gap-1.5 transition-colors'
-              >
-                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.8} d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' />
-                </svg>
-                Find your fit
-              </button>
+              <div className='flex items-center gap-3'>
+                <button 
+                  onClick={() => setShowSizeChart(true)}
+                  className='text-xs text-[var(--ink)] font-bold hover:underline flex items-center gap-1 transition-colors'
+                >
+                  <LucideRuler size={14} className='text-[var(--accent)]' />
+                  Size Chart
+                </button>
+                <span className='text-[var(--border-strong)]'>|</span>
+                <button 
+                  onClick={() => setShowFitFinder(true)}
+                  className='text-xs text-[var(--accent)] font-semibold hover:underline flex items-center gap-1.5 transition-colors'
+                >
+                  <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.8} d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' />
+                  </svg>
+                  Find your fit
+                </button>
+              </div>
             </div>
             <div className='flex gap-2.5 flex-wrap'>
               {productData.sizes.map((item, index) => (
@@ -198,6 +226,7 @@ const Product = () => {
           {/* Add to Cart & Wishlist */}
           <div className='flex items-center gap-4 mt-2'>
             <button
+              disabled={productData.stock === 0}
               onClick={async () => {
                 try {
                   if (!size) {
@@ -210,10 +239,10 @@ const Product = () => {
                   toast.error('Failed to add item to cart');
                 }
               }}
-              className='btn-primary h-14 rounded-full text-sm font-semibold uppercase tracking-wider flex items-center justify-center gap-2.5 flex-1 min-w-[200px] hover:bg-[var(--accent-hover)] transition-colors'
+              className={`h-14 rounded-full text-sm font-semibold uppercase tracking-wider flex items-center justify-center gap-2.5 flex-1 min-w-[200px] transition-colors ${productData.stock === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'btn-primary hover:bg-[var(--accent-hover)]'}`}
             >
               <LucideShoppingBag size={18} />
-              Add to Cart
+              {productData.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
             </button>
             <button
               onClick={() => toggleWishlist(productData._id)}
@@ -223,6 +252,11 @@ const Product = () => {
             >
               <LucideHeart size={20} fill={isWishlisted ? 'currentColor' : 'none'} />
             </button>
+          </div>
+
+          {/* Pincode & Delivery Serviceability Checker */}
+          <div className='mt-2'>
+            <PincodeChecker />
           </div>
 
           {/* Shoplex Promise List */}
@@ -246,7 +280,7 @@ const Product = () => {
               </div>
               <div>
                 <p className='text-[var(--ink)] font-semibold'>Complimentary Delivery</p>
-                <p className='text-[var(--ink-muted)] text-[10px] mt-0.5'>Free shipping on orders above ₹500</p>
+                <p className='text-[var(--ink-muted)] text-[10px] mt-0.5'>Free shipping on orders above ₹999</p>
               </div>
             </div>
             <div className='flex items-center gap-3.5'>
@@ -257,21 +291,21 @@ const Product = () => {
               </div>
               <div>
                 <p className='text-[var(--ink)] font-semibold'>Hassle-Free Returns</p>
-                <p className='text-[var(--ink-muted)] text-[10px] mt-0.5'>Easy 7-day return policy for ultimate peace of mind</p>
+                <p className='text-[var(--ink-muted)] text-[10px] mt-0.5'>Easy 30-day return policy for ultimate peace of mind</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Description & Reviews Section */}
+      {/* Description & Specs & Reviews Section */}
       <div className='mt-16 border-t border-[var(--border)] pt-12'>
         <div className='flex gap-8 border-b border-[var(--border)] mb-8'>
           <button
             onClick={() => setActiveTab('description')}
             className={`pb-4 font-bold text-sm uppercase tracking-wider transition-all border-b-2 -mb-[2px] ${activeTab === 'description' ? 'text-[var(--ink)] border-[var(--ink)]' : 'text-[var(--ink-muted)] border-transparent hover:text-[var(--ink)]'}`}
           >
-            Description
+            Product Specs & Overview
           </button>
           <button
             onClick={() => setActiveTab('reviews')}
@@ -282,9 +316,43 @@ const Product = () => {
         </div>
 
         {activeTab === 'description' ? (
-          <div className='max-w-3xl text-[var(--ink-soft)] leading-relaxed text-sm sm:text-base space-y-4'>
-            <p>Welcome to Shoplex! Our curated collection brings you the finest quality clothing designed for comfort and style. Each piece is carefully selected to ensure premium quality and exceptional value.</p>
-            <p>Every product in our Shoplex collection comes with detailed descriptions, high-quality images, and size guides to help you find the perfect fit. We believe in creating a shopping experience that exceeds your expectations!</p>
+          <div className='grid md:grid-cols-2 gap-8'>
+            <div className='text-[var(--ink-soft)] leading-relaxed text-sm sm:text-base space-y-4'>
+              <h3 className='font-bold text-lg text-[var(--ink)]'>About This Garment</h3>
+              <p>{productData.description || 'Welcome to Shoplex! Our curated collection brings you the finest quality clothing designed for comfort and style.'}</p>
+              <p>Crafted with premium materials and precision stitching to maintain shape, color, and texture even after multiple washes.</p>
+            </div>
+
+            {/* Specifications Grid */}
+            <div className='bg-[var(--surface-elevated)] p-6 rounded-xl border border-[var(--border)] space-y-4'>
+              <h3 className='font-bold text-base text-[var(--ink)] uppercase tracking-wider text-xs'>Product Specifications</h3>
+              <div className='grid grid-cols-2 gap-y-3 text-xs'>
+                <div>
+                  <span className='text-[var(--ink-muted)] block'>Fabric Material</span>
+                  <span className='font-bold text-[var(--ink)]'>100% Premium Cotton</span>
+                </div>
+                <div>
+                  <span className='text-[var(--ink-muted)] block'>Fit Type</span>
+                  <span className='font-bold text-[var(--ink)]'>Regular / Tailored</span>
+                </div>
+                <div>
+                  <span className='text-[var(--ink-muted)] block'>Neckline / Collar</span>
+                  <span className='font-bold text-[var(--ink)]'>Crew Neck / Classic</span>
+                </div>
+                <div>
+                  <span className='text-[var(--ink-muted)] block'>Weave Pattern</span>
+                  <span className='font-bold text-[var(--ink)]'>Single Jersey Knit</span>
+                </div>
+                <div>
+                  <span className='text-[var(--ink-muted)] block'>Transparency</span>
+                  <span className='font-bold text-[var(--ink)]'>Opaque</span>
+                </div>
+                <div>
+                  <span className='text-[var(--ink-muted)] block'>Wash Care</span>
+                  <span className='font-bold text-[var(--ink)]'>Machine Wash Cold</span>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className='max-w-4xl'>
@@ -368,16 +436,17 @@ const Product = () => {
 
       <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
 
-      {/* Fit Finder Modal */}
+      {/* Modals */}
       <FitFinder 
-        isOpen={showFitFinder}
-        onClose={() => setShowFitFinder(false)}
+        isOpen={showFitFinder} 
+        onClose={() => setShowFitFinder(false)} 
         onSelectSize={(recommendedSize) => setSize(recommendedSize)}
         availableSizes={productData.sizes || []}
+        productCategory={productData.category} 
       />
-
+      <SizeChartModal isOpen={showSizeChart} onClose={() => setShowSizeChart(false)} category={productData.category} />
     </div>
-  ) : <div className=' opacity-0'></div>
+  ) : <div className='opacity-0'></div>
 }
 
 export default Product

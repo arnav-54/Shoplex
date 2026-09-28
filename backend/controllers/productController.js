@@ -48,6 +48,7 @@ const addProduct = async (req, res) => {
             sizes: parsedSizes,
             image: imagesUrl,
             originalPrice: Number(price),
+            stock: req.body.stock !== undefined ? Number(req.body.stock) : 50,
             date: Date.now().toString()
         }
 
@@ -81,6 +82,7 @@ const listProducts = async (req, res) => {
             category: product.category,
             subCategory: product.subCategory,
             sizes: product.sizes,
+            stock: product.stock,
             bestseller: product.bestseller,
             threeSixtyImages: product.threeSixtyImages,
             date: parseInt(product.date)
@@ -110,7 +112,7 @@ const removeProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
-        const { id, name, description, price, category, subCategory, sizes, bestseller, threeSixtyImages } = req.body
+        const { id, name, description, price, category, subCategory, sizes, bestseller, threeSixtyImages, stock } = req.body
 
       
         const oldProduct = await prisma.product.findUnique({ where: { id: String(id) } })
@@ -133,7 +135,9 @@ const updateProduct = async (req, res) => {
             threeSixtyImages: typeof threeSixtyImages === 'string' ? JSON.parse(threeSixtyImages) : threeSixtyImages
         }
 
-
+        if (stock !== undefined) {
+            updatedData.stock = Number(stock);
+        }
 
         await prisma.product.update({
             where: { id: String(id) },
@@ -200,6 +204,7 @@ const singleProduct = async (req, res) => {
                 category: product.category,
                 subCategory: product.subCategory,
                 sizes: product.sizes,
+                stock: product.stock,
                 bestseller: product.bestseller,
                 threeSixtyImages: product.threeSixtyImages,
                 date: parseInt(product.date),

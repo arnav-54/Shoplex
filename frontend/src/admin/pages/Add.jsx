@@ -18,6 +18,7 @@ const Add = ({ token }) => {
   const [subCategory, setSubCategory] = useState("Topwear");
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
+  const [stock, setStock] = useState("50");
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -33,6 +34,7 @@ const Add = ({ token }) => {
       formData.append("subCategory", subCategory)
       formData.append("bestseller", bestseller)
       formData.append("sizes", JSON.stringify(sizes))
+      formData.append("stock", stock)
 
       image1 && formData.append("image1", image1)
       image2 && formData.append("image2", image2)
@@ -50,6 +52,7 @@ const Add = ({ token }) => {
         setImage3(false)
         setImage4(false)
         setPrice('')
+        setStock('50')
       } else {
         toast.error(response.data.message)
       }
@@ -99,7 +102,7 @@ const Add = ({ token }) => {
 
 
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6 w-full'>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-6 w-full'>
             <div>
               <div className='flex items-center gap-2 mb-3'>
                 <svg className='w-5 h-5 text-orange-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -130,6 +133,23 @@ const Add = ({ token }) => {
                 className='w-full'
                 type="number"
                 placeholder='0.00'
+                required
+              />
+            </div>
+
+            <div>
+              <div className='flex items-center gap-2 mb-3'>
+                <svg className='w-5 h-5 text-orange-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' />
+                </svg>
+                <label className='font-semibold text-amber-800'>Stock Quantity</label>
+              </div>
+              <input
+                onChange={(e) => setStock(e.target.value)}
+                value={stock}
+                className='w-full'
+                type="number"
+                placeholder='50'
                 required
               />
             </div>
