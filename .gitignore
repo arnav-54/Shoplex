@@ -71,7 +71,8 @@ jspm_packages/
 
 # Gatsby files
 .cache/
-public
+# public (uncommented to allow Vite frontend/public)
+!frontend/public/
 
 # Storybook build outputs
 .out
