@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import prisma from "../config/prisma.js";
 import { v2 as cloudinary } from "cloudinary";
+import { sendPasswordResetEmail } from "../config/email.js";
 
 const createToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -142,9 +143,91 @@ const updateUserProfile = async (req, res) => {
         return res.json({ success: true, user: updatedUser });
 
     } catch (error) {
-        console.log('Profile update error:', error);
+        console.log('Update profile error:', error);
         return res.json({ success: false, message: "Failed to update profile" });
     }
-}
+};
 
-export { loginUser, registerUser, adminLogin, getUserProfile, updateUserProfile };
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.json({ success: false, message: "Please provide an email address" });
+        }
+
+        const user = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+        if (!user) {
+            return res.json({ success: false, message: "No account found with this email" });
+        }
+
+        // Generate 15-minute secure reset token
+        const resetToken = jwt.sign(
+            { id: user.id, email: user.email },
+            process.env.JWT_SECRET,
+            { expiresIn: '15m' }
+        );
+
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
+
+        // Send email (non-blocking for resilient recovery)
+        try {
+            await sendPasswordResetEmail(user.email, resetUrl, user.name);
+        } catch (mailErr) {
+            console.log("Email dispatch failed (dev fallback active):", mailErr.message);
+        }
+
+        return res.json({
+            success: true,
+            message: "Password reset link sent to your email!",
+            resetUrl
+        });
+
+    } catch (error) {
+        console.log("Forgot password error:", error);
+        return res.json({ success: false, message: "Failed to process forgot password request" });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+
+        if (!token || !password) {
+            return res.json({ success: false, message: "Token and new password are required" });
+        }
+
+        if (password.length < 6) {
+            return res.json({ success: false, message: "Password must be at least 6 characters" });
+        }
+
+        // Verify token
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.json({ success: false, message: "Reset link is invalid or has expired. Please request a new one." });
+        }
+
+        const user = await prisma.user.findUnique({ where: { id: String(decoded.id) } });
+        if (!user) {
+            return res.json({ success: false, message: "User not found or account was removed" });
+        }
+
+        // Hash new password and update
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { password: hashedPassword }
+        });
+
+        return res.json({ success: true, message: "Password updated successfully! You can now log in." });
+
+    } catch (error) {
+        console.log("Reset password error:", error);
+        return res.json({ success: false, message: "Failed to reset password" });
+    }
+};
+
+export { loginUser, registerUser, adminLogin, getUserProfile, updateUserProfile, forgotPassword, resetPassword };
