@@ -10,6 +10,7 @@
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
+    "sync-products": "node scripts/syncDummyJSONProducts.js",
     "build": "npx prisma generate"
   },
   "author": "",
