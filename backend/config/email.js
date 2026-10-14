@@ -149,10 +149,55 @@ const sendOrderConfirmationEmail = async (userEmail, orderDetails) => {
 
         await transporter.sendMail(mailOptions)
         console.log(`Order confirmation email sent to ${userEmail}`)
-
     } catch (error) {
         console.log("Error sending order confirmation email:", error.message)
     }
 }
 
-export { sendPriceDropEmail, sendOrderConfirmationEmail }
+const sendPasswordResetEmail = async (userEmail, resetUrl, userName = 'there') => {
+    try {
+        const transporter = getTransporter();
+
+        const mailOptions = {
+            from: '"Shoplex Security" <security@shoplex.com>',
+            to: userEmail,
+            subject: '🔒 Reset Your Shoplex Password',
+            html: `
+                <div style="font-family: 'DM Sans', -apple-system, sans-serif; max-width: 550px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">
+                    <div style="background: #1a1a2e; padding: 28px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 22px; letter-spacing: 2px;">SHOPLEX</h1>
+                    </div>
+                    <div style="padding: 32px 28px; color: #334155;">
+                        <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Password Reset Request</h2>
+                        <p style="font-size: 15px; line-height: 1.6; color: #475569;">
+                            Hi <strong>${userName}</strong>, we received a request to reset the password for your Shoplex account.
+                        </p>
+                        <p style="font-size: 14px; color: #64748b; line-height: 1.5;">
+                            Click the button below to set a new password. This link is valid for <strong>15 minutes</strong>.
+                        </p>
+                        <div style="text-align: center; margin: 32px 0;">
+                            <a href="${resetUrl}" style="background: #e85d4a; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(232, 93, 74, 0.25);">
+                                Reset Password
+                            </a>
+                        </div>
+                        <p style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                            If the button doesn't work, copy and paste this link in your browser:<br/>
+                            <a href="${resetUrl}" style="color: #e85d4a; word-break: break-all;">${resetUrl}</a>
+                        </p>
+                        <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;" />
+                        <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+                            If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.
+                        </p>
+                    </div>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`Password reset email sent to ${userEmail}`);
+    } catch (error) {
+        console.log("Error sending password reset email:", error.message);
+    }
+};
+
+export { sendPriceDropEmail, sendOrderConfirmationEmail, sendPasswordResetEmail }
