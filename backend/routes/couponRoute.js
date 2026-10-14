@@ -5,7 +5,7 @@ import authUser from '../middleware/auth.js';
 
 const couponRouter = express.Router();
 
-couponRouter.post('/validate', authUser, validateCoupon);
+couponRouter.post('/validate', validateCoupon);
 couponRouter.post('/create', adminAuth, createCoupon);
 couponRouter.get('/list', adminAuth, listCoupons);
 couponRouter.post('/delete', adminAuth, deleteCoupon);
