@@ -127,6 +127,32 @@ const getUserCart = async (req, res) => {
 
         let cartData = userData.cartData || {};
 
+        // Auto-clean orphaned items if product was removed from store
+        const cartItemIds = Object.keys(cartData);
+        if (cartItemIds.length > 0) {
+            const validProducts = await prisma.product.findMany({
+                where: { id: { in: cartItemIds } },
+                select: { id: true }
+            });
+            const validSet = new Set(validProducts.map(p => p.id));
+            let hasOrphans = false;
+            const cleanedCart = {};
+            for (const id of cartItemIds) {
+                if (validSet.has(id)) {
+                    cleanedCart[id] = cartData[id];
+                } else {
+                    hasOrphans = true;
+                }
+            }
+            if (hasOrphans) {
+                cartData = cleanedCart;
+                await prisma.user.update({
+                    where: { id: String(userId) },
+                    data: { cartData }
+                });
+            }
+        }
+
         res.json({ success: true, cartData, timestamp: Date.now() })
 
     } catch (error) {
