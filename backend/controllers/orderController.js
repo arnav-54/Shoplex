@@ -16,32 +16,54 @@ const razorpayInstance = new razorpay({
 })
 
 
-// Helper: Validate stock for all order items
+// Helper: Validate and atomically decrement stock for all order items with rollback support
 const validateAndDecrementStock = async (items) => {
-    for (const item of items) {
-        const productId = item._id || item.id;
-        if (!productId) continue;
+    const decrementedItems = [];
 
-        const product = await prisma.product.findUnique({ where: { id: String(productId) } });
-        if (!product) {
-            throw new Error(`Product "${item.name}" is no longer available`);
-        }
-        if (product.stock < item.quantity) {
-            if (product.stock === 0) {
-                throw new Error(`"${item.name}" is out of stock`);
+    try {
+        for (const item of items) {
+            const productId = item._id || item.id;
+            if (!productId) continue;
+            const quantity = Number(item.quantity) || 1;
+
+            // Atomic conditional update: only decrements if current stock >= quantity (eliminates overselling race conditions)
+            const updateResult = await prisma.product.updateMany({
+                where: {
+                    id: String(productId),
+                    stock: { gte: quantity }
+                },
+                data: {
+                    stock: { decrement: quantity }
+                }
+            });
+
+            if (updateResult.count === 0) {
+                // Stock check failed during high concurrency — inspect product state
+                const product = await prisma.product.findUnique({ where: { id: String(productId) } });
+                if (!product) {
+                    throw new Error(`Product "${item.name}" is no longer available`);
+                }
+                if (product.stock === 0) {
+                    throw new Error(`"${item.name}" is currently out of stock`);
+                }
+                throw new Error(`Only ${product.stock} units of "${item.name}" available. Please reduce quantity.`);
             }
-            throw new Error(`Only ${product.stock} units of "${item.name}" are available`);
-        }
-    }
 
-    // All checks passed — now decrement stock
-    for (const item of items) {
-        const productId = item._id || item.id;
-        if (!productId) continue;
-        await prisma.product.update({
-            where: { id: String(productId) },
-            data: { stock: { decrement: item.quantity } }
-        });
+            decrementedItems.push({ productId: String(productId), quantity });
+        }
+    } catch (err) {
+        // Rollback: restore stock for previously decremented items in this transaction batch
+        for (const dec of decrementedItems) {
+            try {
+                await prisma.product.update({
+                    where: { id: dec.productId },
+                    data: { stock: { increment: dec.quantity } }
+                });
+            } catch (rollbackErr) {
+                console.error("Rollback error for product:", dec.productId, rollbackErr.message);
+            }
+        }
+        throw err;
     }
 }
 
@@ -400,8 +422,28 @@ const userOrders = async (req,res) => {
 
 const updateStatus = async (req,res) => {
     try {
-        
         const { orderId, status } = req.body
+
+        const existingOrder = await prisma.order.findUnique({ where: { id: String(orderId) } })
+        if (!existingOrder) {
+            return res.json({ success: false, message: 'Order not found' })
+        }
+
+        // Automatic inventory restocking upon cancellation
+        if (status === 'Cancelled' && existingOrder.status !== 'Cancelled') {
+            const rawItems = existingOrder.items;
+            const items = Array.isArray(rawItems) ? rawItems : (typeof rawItems === 'string' ? JSON.parse(rawItems) : []);
+            for (const item of items) {
+                const productId = item._id || item.id;
+                const quantity = Number(item.quantity) || 1;
+                if (productId) {
+                    await prisma.product.update({
+                        where: { id: String(productId) },
+                        data: { stock: { increment: quantity } }
+                    }).catch(e => console.log("Restock error for product:", productId, e.message));
+                }
+            }
+        }
 
         await prisma.order.update({ where: { id: String(orderId) }, data: { status } })
         res.json({success:true,message:'Order status updated'})
