@@ -40,17 +40,19 @@ const CartDrawer = () => {
     <>
       {/* Backdrop */}
       <div 
-        className={`fixed inset-0 bg-black/40 backdrop-blur-xs z-[100] transition-opacity duration-300 ${
-          isCartOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 bg-black/40 backdrop-blur-xs z-[100] transition-all duration-300 ${
+          isCartOpen ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'
         }`}
         onClick={() => setCartOpen(false)}
+        aria-hidden={!isCartOpen}
       />
 
       {/* Drawer Panel */}
       <div 
-        className={`fixed top-0 right-0 bottom-0 w-[450px] max-w-[90vw] bg-[var(--surface)] border-l border-[var(--border)] z-[101] shadow-2xl transition-transform duration-350 ease-out flex flex-col ${
-          isCartOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed top-0 right-0 bottom-0 w-[450px] max-w-[90vw] bg-[var(--surface)] border-l border-[var(--border)] z-[101] shadow-2xl transition-all duration-350 ease-out flex flex-col ${
+          isCartOpen ? 'translate-x-0 opacity-100 visible pointer-events-auto' : 'translate-x-full opacity-0 invisible pointer-events-none'
         }`}
+        aria-hidden={!isCartOpen}
       >
         {/* Header */}
         <div className='flex items-center justify-between p-6 border-b border-[var(--border)] bg-[var(--surface-elevated)]'>
