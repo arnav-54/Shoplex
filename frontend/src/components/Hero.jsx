@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { assets } from '../assets/assets'
-import { ShoppingCharacter } from './Illustrations'
 import heroSlide2 from '../assets/hero_slide_2.png'
 import heroSlide3 from '../assets/hero_slide_3.png'
 
@@ -97,10 +96,6 @@ const Hero = () => {
               >
                 {slide.description}
               </p>
-              {/* Cute Cartoon Illustration floating next to text on large screens */}
-              <div className='hidden xl:block absolute -right-24 -top-8 animate-float'>
-                <ShoppingCharacter size={70} />
-              </div>
             </div>
 
             {/* CTA Buttons */}
@@ -163,14 +158,8 @@ const Hero = () => {
               <div className='absolute inset-0 bg-gradient-to-t from-[var(--ink)]/30 to-transparent'></div>
             </div>
 
-            {/* Mobile/Tablet float illustration */}
-            <div className='xl:hidden absolute -bottom-6 -left-6 animate-float'>
-              <ShoppingCharacter size={80} />
-            </div>
-
-            {/* Sparkle decorative icons */}
-            <div className='absolute top-8 left-4 sm:left-12 text-2xl opacity-60 animate-gentle-pulse'>✨</div>
-            <div className='absolute bottom-16 right-4 sm:right-12 text-2xl opacity-60 animate-float animation-delay-1000'>🌸</div>
+            {/* Elegant Minimal Accent */}
+            <div className='hidden sm:block absolute -top-3 -right-3 w-24 h-24 bg-gradient-to-br from-[var(--accent)]/10 to-transparent rounded-full blur-xl pointer-events-none'></div>
           </div>
         </div>
 

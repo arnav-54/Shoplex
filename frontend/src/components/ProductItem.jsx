@@ -59,9 +59,13 @@ const ProductItem = (props) => {
         <div className='relative overflow-hidden aspect-[4/5] bg-[var(--surface-elevated)]'>
           <img
             className='w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
-            src={image?.[0] || '/placeholder.jpg'}
+            src={image?.[0] || 'https://res.cloudinary.com/dx1hth42p/image/upload/v1793296373/shoplex_curated_clothes/og835j1xjudizznq6f9w.jpg'}
             alt={name || 'Product'}
             loading="lazy"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://res.cloudinary.com/dx1hth42p/image/upload/v1793296373/shoplex_curated_clothes/og835j1xjudizznq6f9w.jpg';
+            }}
           />
           <div className='absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
 
