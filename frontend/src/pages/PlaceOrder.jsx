@@ -140,48 +140,89 @@ const PlaceOrder = () => {
         return Math.max(0, subtotal - discount + effectiveDeliveryFee);
     }
 
-    const initPay = (order) => {
-        setIsPlacingOrder(false); // Hand over to Razorpay SDK modal
-        const options = {
-            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-            amount: order.amount,
-            currency: order.currency,
-            name: 'Order Payment',
-            description: 'Order Payment',
-            order_id: order.id,
-            receipt: order.receipt,
-            modal: {
-                ondismiss: () => {
-                    setIsPlacingOrder(false);
-                }
-            },
-            handler: async (response) => {
-                console.log(response)
-                setIsPlacingOrder(true);
-                setProcessingMessage('Verifying payment confirmation...');
-                try {
-                    const { data } = await axios.post(backendUrl + '/api/order/verifyRazorpay', response, { headers: { Authorization: `Bearer ${token}` } })
-                    setIsPlacingOrder(false);
-                    if (data.success) {
-                        setCartItems({});
-                        setOrderSuccess({
-                            orderId: order.id || `ORD-${Date.now().toString().slice(-6)}`,
-                            amount: getFinalAmount(),
-                            paymentMethod: 'Razorpay Online',
-                            address: formData
-                        });
-                    } else {
-                        toast.error(data.message || 'Payment verification failed');
-                    }
-                } catch (error) {
-                    setIsPlacingOrder(false);
-                    console.log(error)
-                    toast.error(error.message || 'Payment verification failed')
-                }
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            if (window.Razorpay) {
+                resolve(true);
+                return;
             }
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
+    const initPay = async (order, backendKey) => {
+        try {
+            const isLoaded = await loadRazorpayScript();
+            if (!isLoaded || !window.Razorpay) {
+                setIsPlacingOrder(false);
+                toast.error('Payment gateway SDK could not be loaded. Please disable any ad-blockers and refresh.');
+                return;
+            }
+
+            const razorpayKey = backendKey || order?.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_Ttmj5TDvb0ZPVz';
+
+            const options = {
+                key: razorpayKey,
+                amount: order.amount,
+                currency: order.currency || 'INR',
+                name: 'Shoplex Store',
+                description: 'Payment for your order',
+                order_id: order.id,
+                receipt: order.receipt,
+                prefill: {
+                    name: `${formData.firstName || ''} ${formData.lastName || ''}`.trim(),
+                    email: formData.email || '',
+                    contact: formData.phone || ''
+                },
+                theme: {
+                    color: '#e85d4a'
+                },
+                modal: {
+                    ondismiss: () => {
+                        setIsPlacingOrder(false);
+                    }
+                },
+                handler: async (response) => {
+                    setIsPlacingOrder(true);
+                    setProcessingMessage('Verifying payment confirmation...');
+                    try {
+                        const { data } = await axios.post(backendUrl + '/api/order/verifyRazorpay', response, { headers: { Authorization: `Bearer ${token}` } });
+                        setIsPlacingOrder(false);
+                        if (data.success) {
+                            setCartItems({});
+                            setOrderSuccess({
+                                orderId: order.id || `ORD-${Date.now().toString().slice(-6)}`,
+                                amount: getFinalAmount(),
+                                paymentMethod: 'Razorpay Online',
+                                address: formData
+                            });
+                        } else {
+                            toast.error(data.message || 'Payment verification failed');
+                        }
+                    } catch (error) {
+                        setIsPlacingOrder(false);
+                        console.error('Verify payment error:', error);
+                        toast.error(error.message || 'Payment verification failed');
+                    }
+                }
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function (resp) {
+                setIsPlacingOrder(false);
+                toast.error(resp.error?.description || 'Payment failed or declined');
+            });
+            rzp.open();
+            setIsPlacingOrder(false);
+        } catch (err) {
+            setIsPlacingOrder(false);
+            console.error('Razorpay init error:', err);
+            toast.error(err.message || 'Could not launch payment gateway');
         }
-        const rzp = new window.Razorpay(options)
-        rzp.open()
     }
 
     const onSubmitHandler = async (event) => {
@@ -284,7 +325,7 @@ const PlaceOrder = () => {
                 case 'razorpay':
                     const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { Authorization: `Bearer ${token}` } })
                     if (responseRazorpay.data.success) {
-                        initPay(responseRazorpay.data.order)
+                        await initPay(responseRazorpay.data.order, responseRazorpay.data.key_id);
                     } else {
                         setIsPlacingOrder(false);
                         if (responseRazorpay.data.message === 'Invalid token' || responseRazorpay.data.message === 'Not Authorized Login Again') {
