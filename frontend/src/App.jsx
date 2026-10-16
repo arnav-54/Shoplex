@@ -76,35 +76,35 @@ const App = () => {
   }
 
   return (
-    <>
+    <div className='min-h-screen flex flex-col w-full overflow-x-hidden bg-[var(--surface-warm)]'>
       <PromoBar />
-      <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
-      <ToastContainer autoClose={2000} limit={3} />
       <Navbar />
       <CartDrawer />
       <SearchBar />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/collection' element={<Collection />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/contact' element={<Contact />} />
-        <Route path='/faq' element={<FAQ />} />
-        <Route path='/terms' element={<Terms />} />
-        <Route path='/product/:productId' element={<Product />} />
-        <Route path='/cart' element={<Cart />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
-        <Route path='/reset-password/:token' element={<ResetPassword />} />
-        <Route path='/place-order' element={<ProtectedRoute><PlaceOrder /></ProtectedRoute>} />
-        <Route path='/orders' element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-        <Route path='/profile' element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path='/verify' element={<Verify />} />
-        <Route path='/wishlist' element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
-        <Route path='*' element={<NotFound />} />
-      </Routes>
+      <main className='flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10'>
+        <ToastContainer autoClose={2000} limit={3} />
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/collection' element={<Collection />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/contact' element={<Contact />} />
+          <Route path='/faq' element={<FAQ />} />
+          <Route path='/terms' element={<Terms />} />
+          <Route path='/product/:productId' element={<Product />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/reset-password/:token' element={<ResetPassword />} />
+          <Route path='/place-order' element={<ProtectedRoute><PlaceOrder /></ProtectedRoute>} />
+          <Route path='/orders' element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+          <Route path='/profile' element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path='/verify' element={<Verify />} />
+          <Route path='/wishlist' element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+          <Route path='*' element={<NotFound />} />
+        </Routes>
+      </main>
       <Footer />
-      </div>
-    </>
+    </div>
   )
 }
 

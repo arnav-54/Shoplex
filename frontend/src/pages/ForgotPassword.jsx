@@ -2,149 +2,260 @@ import React, { useContext, useState } from 'react'
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { KeyRound, Mail, ArrowLeft, CheckCircle2, Loader2, ShieldCheck, Lock, Sparkles, Check, ExternalLink } from 'lucide-react';
 
 const ForgotPassword = () => {
     const { navigate, backendUrl } = useContext(ShopContext)
     const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [emailSent, setEmailSent] = useState(false)
+    const [directResetUrl, setDirectResetUrl] = useState('')
+    const [copied, setCopied] = useState(false)
 
     const onSubmitHandler = async (event) => {
         event.preventDefault();
+        if (!email.trim()) {
+            toast.error('Please enter your email address');
+            return;
+        }
+
         setIsLoading(true);
 
         try {
-            const response = await axios.post(backendUrl + '/api/user/forgot-password', { email })
+            const response = await axios.post(backendUrl + '/api/user/forgot-password', { email: email.trim() })
 
             if (response.data.success) {
-                setEmailSent(true)
-                toast.success('Password reset link sent to your email!')
+                setEmailSent(true);
+                if (response.data.resetUrl) {
+                    setDirectResetUrl(response.data.resetUrl);
+                }
+                toast.success('Password reset link generated!')
             } else {
-                toast.error(response.data.message)
+                toast.error(response.data.message || 'No account found with this email')
             }
         } catch (error) {
             console.error('Error:', error);
-            if (error.response) {
-                toast.error(error.response.data.message || 'Failed to send reset link')
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message)
             } else {
-                toast.error('Network error. Please try again.')
+                toast.error('Failed to send reset link. Please verify backend is running.')
             }
         } finally {
             setIsLoading(false);
         }
     }
 
-    if (emailSent) {
-        return (
-            <div className='min-h-screen flex items-center justify-center py-12 px-4 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50'>
-                <div className='modern-card w-full max-w-md text-center animate-fade-in-up'>
-                    <div className='w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                        <svg className='w-8 h-8 text-green-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
-                        </svg>
-                    </div>
-                    <h2 className='playfair text-3xl font-bold text-amber-800 mb-3'>Check Your Email</h2>
-                    <p className='text-amber-700 mb-6'>
-                        We've sent a password reset link to <strong>{email}</strong>.
-                        Please check your inbox and follow the instructions to reset your password.
-                    </p>
-                    <div className='space-y-3'>
-                        <button
-                            onClick={() => navigate('/login')}
-                            className='w-full btn-primary py-3 text-lg font-bold'
-                        >
-                            Back to Login
-                        </button>
-                        <button
-                            onClick={() => {
-                                setEmailSent(false)
-                                setEmail('')
-                            }}
-                            className='w-full btn-secondary py-3 text-lg font-bold'
-                        >
-                            Send Again
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )
+    const copyResetLink = () => {
+        if (directResetUrl) {
+            navigator.clipboard.writeText(directResetUrl);
+            setCopied(true);
+            toast.info('Reset link copied to clipboard!');
+            setTimeout(() => setCopied(false), 2500);
+        }
     }
 
     return (
-        <div className='min-h-screen flex items-center justify-center py-12 px-4 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50'>
-            <div className='modern-card w-full max-w-md animate-fade-in-up'>
-                <form onSubmit={onSubmitHandler} className='space-y-6'>
+        <div className='py-8 sm:py-16 px-4 flex items-center justify-center min-h-[75vh]'>
+            <div className='w-full max-w-4xl bg-[var(--surface)] border border-[var(--border)] rounded-3xl overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-12 animate-fade-in-up'>
+                
+                {/* Modern Side UI: Security Showcase & Recovery Stepper */}
+                <div className='lg:col-span-5 bg-gradient-to-br from-slate-950 via-slate-900 to-zinc-950 text-white p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden'>
+                    {/* Ambient Glow Orbs */}
+                    <div className='absolute -top-16 -left-16 w-48 h-48 bg-rose-500/15 rounded-full blur-3xl pointer-events-none' />
+                    <div className='absolute -bottom-16 -right-16 w-56 h-56 bg-amber-500/15 rounded-full blur-3xl pointer-events-none' />
 
-                    <div className='text-center pb-4 border-b-2 border-orange-100'>
-                        <div className='flex items-center justify-center gap-3 mb-3'>
-                            <div className='w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center text-white shadow-lg'>
-                                <svg className='w-7 h-7' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z' />
-                                </svg>
-                            </div>
-                            <h2 className='playfair text-4xl font-bold text-amber-800'>Forgot Password</h2>
+                    {/* Top Content */}
+                    <div className='relative z-10'>
+                        <div className='inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-bold tracking-widest uppercase text-rose-300 mb-6'>
+                            <ShieldCheck size={14} className='text-rose-400' />
+                            <span>Zero-Trust Security</span>
                         </div>
-                        <p className='text-amber-600 font-medium'>
-                            Enter your email to receive a password reset link
+
+                        <h3 className='font-heading text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug mb-3'>
+                            Restoring your access with ease.
+                        </h3>
+                        <p className='text-xs sm:text-sm text-slate-300 leading-relaxed mb-8'>
+                            Follow our seamless 3-step cryptographic verification to regain access to your Shoplex account.
                         </p>
+
+                        {/* Step-by-Step Recovery Timeline */}
+                        <div className='space-y-4'>
+                            <div className='flex items-start gap-3.5'>
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
+                                    emailSent ? 'bg-emerald-500 text-white' : 'bg-rose-500/20 border border-rose-400/40 text-rose-300'
+                                }`}>
+                                    {emailSent ? <Check size={14} /> : '1'}
+                                </div>
+                                <div>
+                                    <h4 className='text-xs font-bold text-white uppercase tracking-wider'>Request Link</h4>
+                                    <p className='text-[11px] text-slate-400'>Submit your registered account email</p>
+                                </div>
+                            </div>
+
+                            <div className='flex items-start gap-3.5'>
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
+                                    emailSent ? 'bg-amber-500/30 border border-amber-400 text-amber-300' : 'bg-white/10 border border-white/15 text-slate-400'
+                                }`}>
+                                    2
+                                </div>
+                                <div>
+                                    <h4 className='text-xs font-bold text-white uppercase tracking-wider'>Token Verification</h4>
+                                    <p className='text-[11px] text-slate-400'>One-time 15-minute signed token dispatched</p>
+                                </div>
+                            </div>
+
+                            <div className='flex items-start gap-3.5'>
+                                <div className='w-7 h-7 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-xs font-bold text-slate-400 shrink-0'>
+                                    3
+                                </div>
+                                <div>
+                                    <h4 className='text-xs font-bold text-white uppercase tracking-wider'>New Credentials</h4>
+                                    <p className='text-[11px] text-slate-400'>Set a strong password with live feedback</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-
-                    <div className='space-y-2'>
-                        <label className='flex items-center gap-2 text-sm font-bold text-amber-800'>
-                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
-                            </svg>
-                            Email Address
-                        </label>
-                        <input
-                            onChange={(e) => setEmail(e.target.value)}
-                            value={email}
-                            type="email"
-                            className='w-full px-4 py-3 border-2 border-orange-200 rounded-xl focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-none transition-all bg-white hover:border-orange-300'
-                            placeholder='you@example.com'
-                            required
-                        />
+                    {/* Bottom Security Guarantee */}
+                    <div className='relative z-10 pt-8 mt-8 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400'>
+                        <span className='flex items-center gap-1.5'>
+                            <Lock size={12} className='text-emerald-400' />
+                            256-bit TLS Encrypted
+                        </span>
+                        <span>Shoplex Guard™</span>
                     </div>
+                </div>
 
+                {/* Form Column (lg:col-span-7) */}
+                <div className='lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center'>
+                    {!emailSent ? (
+                        <form onSubmit={onSubmitHandler} className='space-y-6'>
+                            <div>
+                                <div className='w-12 h-12 bg-[var(--accent-soft)] text-[var(--accent)] rounded-2xl flex items-center justify-center mb-4 border border-[var(--border)] shadow-xs'>
+                                    <KeyRound size={22} />
+                                </div>
+                                <h2 className='font-heading text-2xl sm:text-3xl font-extrabold text-[var(--ink)] tracking-tight mb-2'>
+                                    Forgot Password?
+                                </h2>
+                                <p className='text-xs sm:text-sm text-[var(--ink-muted)] leading-relaxed'>
+                                    No worries! Enter your registered email and we'll dispatch a secure recovery link right away.
+                                </p>
+                            </div>
 
-                    <button
-                        type='submit'
-                        disabled={isLoading}
-                        className='w-full btn-primary text-center py-4 text-lg font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
-                    >
-                        {isLoading ? (
-                            <>
-                                <svg className='animate-spin h-5 w-5' fill='none' viewBox='0 0 24 24'>
-                                    <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                                    <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                                </svg>
-                                Sending...
-                            </>
-                        ) : (
-                            <>
-                                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
-                                </svg>
-                                Send Reset Link
-                            </>
-                        )}
-                    </button>
+                            {/* Email Input */}
+                            <div className='space-y-2'>
+                                <label className='flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--ink)]'>
+                                    <Mail size={14} className='text-[var(--accent)]' />
+                                    Email Address
+                                </label>
+                                <div className='relative'>
+                                    <input
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        value={email}
+                                        type="email"
+                                        className='w-full px-4 py-3.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-xl text-sm font-medium text-[var(--ink)] placeholder-[var(--ink-muted)] outline-none focus:border-[var(--ink)] focus:bg-[var(--surface)] transition-all'
+                                        placeholder='Enter your account email (e.g. name@example.com)'
+                                        required
+                                        autoFocus
+                                    />
+                                </div>
+                            </div>
 
+                            {/* Submit Button */}
+                            <button
+                                type='submit'
+                                disabled={isLoading}
+                                className='btn-primary w-full py-3.5 text-sm font-bold tracking-wider uppercase flex items-center justify-center gap-2 disabled:opacity-60 shadow-md'
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className='w-4 h-4 animate-spin' />
+                                        <span>Dispatching Token...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles size={16} />
+                                        <span>Send Password Reset Link</span>
+                                    </>
+                                )}
+                            </button>
 
-                    <div className='text-center'>
-                        <button
-                            type='button'
-                            onClick={() => navigate('/login')}
-                            className='text-orange-600 hover:text-orange-800 font-semibold transition-colors hover:underline inline-flex items-center gap-2'
-                        >
-                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M10 19l-7-7m0 0l7-7m-7 7h18' />
-                            </svg>
-                            Back to Login
-                        </button>
-                    </div>
-                </form>
+                            {/* Back to Login Link */}
+                            <div className='pt-2 flex items-center justify-between text-xs text-[var(--ink-muted)]'>
+                                <button
+                                    type='button'
+                                    onClick={() => navigate('/login')}
+                                    className='inline-flex items-center gap-2 font-semibold text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors'
+                                >
+                                    <ArrowLeft size={14} />
+                                    <span>Back to Sign In</span>
+                                </button>
+                                <span>Remembered password?</span>
+                            </div>
+                        </form>
+                    ) : (
+                        <div className='text-left space-y-6 animate-fade-in-up'>
+                            <div className='w-14 h-14 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 rounded-2xl flex items-center justify-center border border-emerald-200 dark:border-emerald-800 shadow-sm'>
+                                <CheckCircle2 size={28} />
+                            </div>
+
+                            <div>
+                                <h2 className='font-heading text-2xl sm:text-3xl font-extrabold text-[var(--ink)] mb-2 tracking-tight'>
+                                    Check Your Inbox
+                                </h2>
+                                <p className='text-xs sm:text-sm text-[var(--ink-muted)] leading-relaxed'>
+                                    We've generated a secure password reset link for <strong className='text-[var(--ink)] font-semibold'>{email}</strong>. It will expire in 15 minutes.
+                                </p>
+                            </div>
+
+                            {/* Direct Reset Access Badge (Instant Local Dev / Live Testing) */}
+                            {directResetUrl && (
+                                <div className='p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-xs space-y-2.5'>
+                                    <div className='flex items-center justify-between text-emerald-800 dark:text-emerald-300 font-bold'>
+                                        <span className='flex items-center gap-1.5'>
+                                            <ShieldCheck size={15} />
+                                            Instant Reset Link Ready:
+                                        </span>
+                                        <button 
+                                            onClick={copyResetLink}
+                                            className='px-2.5 py-1 rounded-md bg-emerald-600 text-white text-[11px] font-semibold hover:bg-emerald-700 transition-colors'
+                                        >
+                                            {copied ? 'Copied!' : 'Copy Link'}
+                                        </button>
+                                    </div>
+                                    <p className='font-mono text-[11px] text-[var(--ink)] break-all bg-[var(--surface)] p-2.5 rounded-lg border border-[var(--border)]'>
+                                        {directResetUrl}
+                                    </p>
+                                    <a
+                                        href={directResetUrl}
+                                        className='inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:underline pt-1'
+                                    >
+                                        Proceed directly to set new password <ExternalLink size={13} />
+                                    </a>
+                                </div>
+                            )}
+
+                            <div className='space-y-3 pt-2'>
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className='btn-primary w-full py-3.5 text-sm font-bold tracking-wider uppercase'
+                                >
+                                    Return to Sign In
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setEmailSent(false)
+                                        setEmail('')
+                                        setDirectResetUrl('')
+                                    }}
+                                    className='btn-secondary w-full py-3 text-sm font-semibold'
+                                >
+                                    Try Another Email
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     )

@@ -17,13 +17,6 @@ const PlaceOrder = () => {
     const [processingMessage, setProcessingMessage] = useState('');
     const [orderSuccess, setOrderSuccess] = useState(null);
 
-    useEffect(() => {
-        if (!token) {
-            toast.error('Please login to place an order');
-            navigate('/login');
-        }
-    }, [token]);
-
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -32,18 +25,71 @@ const PlaceOrder = () => {
         city: '',
         state: '',
         zipcode: '',
-        country: '',
+        country: 'India',
         phone: ''
     })
 
+    const [hasSavedAddress, setHasSavedAddress] = useState(false);
+
+    useEffect(() => {
+        if (!token) {
+            toast.error('Please login to place an order');
+            navigate('/login');
+            return;
+        }
+
+        const fetchUserData = async () => {
+            // 1. Check local saved address
+            const saved = localStorage.getItem('shoplex_saved_address');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    setFormData(prev => ({ ...prev, ...parsed, country: parsed.country || 'India' }));
+                    setHasSavedAddress(true);
+                } catch (e) {}
+            }
+
+            // 2. Fetch fresh user profile from backend
+            try {
+                const res = await axios.post(backendUrl + '/api/user/profile', {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (res.data.success && res.data.user) {
+                    const { name, email } = res.data.user;
+                    const nameParts = (name || '').trim().split(' ');
+                    const firstName = nameParts[0] || '';
+                    const lastName = nameParts.slice(1).join(' ') || '';
+                    setFormData(prev => ({
+                        ...prev,
+                        firstName: prev.firstName || firstName,
+                        lastName: prev.lastName || lastName,
+                        email: prev.email || email,
+                        country: prev.country || 'India'
+                    }));
+                }
+            } catch (err) {
+                console.log('Error fetching user profile:', err);
+            }
+        };
+
+        fetchUserData();
+    }, [token]);
+
     // Coupon state
-    const [couponCode, setCouponCode] = useState('')
+    const [couponCode, setCouponCode] = useState('FIRST20')
     const [couponApplied, setCouponApplied] = useState(null) // { code, discountPercent }
     const [couponLoading, setCouponLoading] = useState(false)
 
     const onChangeHandler = (event) => {
         const name = event.target.name
-        const value = event.target.value
+        let value = event.target.value
+
+        if (name === 'phone') {
+            value = value.replace(/\D/g, '').slice(0, 10);
+        } else if (name === 'zipcode') {
+            value = value.replace(/\D/g, '').slice(0, 6);
+        }
+
         setFormData(data => ({ ...data, [name]: value }))
     }
 
@@ -90,7 +136,8 @@ const PlaceOrder = () => {
     const getFinalAmount = () => {
         const subtotal = getCartAmount();
         const discount = getDiscountAmount();
-        return subtotal - discount + delivery_fee;
+        const effectiveDeliveryFee = subtotal >= 999 ? 0 : delivery_fee;
+        return Math.max(0, subtotal - discount + effectiveDeliveryFee);
     }
 
     const initPay = (order) => {
@@ -140,6 +187,21 @@ const PlaceOrder = () => {
     const onSubmitHandler = async (event) => {
         event.preventDefault()
         try {
+            if (!formData.zipcode || formData.zipcode.toString().trim().length !== 6) {
+                toast.error('Please enter a valid 6-digit delivery pincode / zipcode');
+                return;
+            }
+
+            if (!formData.phone || formData.phone.toString().trim().length !== 10) {
+                toast.error('Please enter a valid 10-digit mobile number');
+                return;
+            }
+
+            // Save address for future orders
+            try {
+                localStorage.setItem('shoplex_saved_address', JSON.stringify(formData));
+            } catch (e) {}
+
             let orderItems = []
             const productMap = new Map(products.map(p => [p._id, p]));
 
@@ -175,7 +237,7 @@ const PlaceOrder = () => {
             let orderData = {
                 address: formData,
                 items: orderItems,
-                amount: getCartAmount() + delivery_fee,
+                amount: getFinalAmount(),
                 couponCode: couponApplied ? couponApplied.code : null
             }
 
@@ -253,24 +315,98 @@ const PlaceOrder = () => {
 
             <div className='flex flex-col gap-4 w-full sm:max-w-[480px]'>
 
-                <div className='text-xl sm:text-2xl my-3'>
-                    <Title text1={'DELIVERY'} text2={'INFORMATION'} />
+                <div className='flex items-center justify-between my-3'>
+                    <div className='text-xl sm:text-2xl'>
+                        <Title text1={'DELIVERY'} text2={'INFORMATION'} />
+                    </div>
+                    {hasSavedAddress && (
+                        <span className='inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300'>
+                            <CheckCircle2 size={12} />
+                            <span>Saved Address Loaded</span>
+                        </span>
+                    )}
+                </div>
+
+                <div className='flex gap-3'>
+                    <input required onChange={onChangeHandler} name='firstName' value={formData.firstName} className='border border-gray-300 rounded-lg py-2.5 px-3.5 w-full text-sm font-medium focus:outline-none focus:border-[var(--ink)]' type="text" placeholder='First name' />
+                    <input required onChange={onChangeHandler} name='lastName' value={formData.lastName} className='border border-gray-300 rounded-lg py-2.5 px-3.5 w-full text-sm font-medium focus:outline-none focus:border-[var(--ink)]' type="text" placeholder='Last name' />
+                </div>
+                <input required onChange={onChangeHandler} name='email' value={formData.email} className='border border-gray-300 rounded-lg py-2.5 px-3.5 w-full text-sm font-medium focus:outline-none focus:border-[var(--ink)]' type="email" placeholder='Email address' />
+                <input required onChange={onChangeHandler} name='street' value={formData.street} className='border border-gray-300 rounded-lg py-2.5 px-3.5 w-full text-sm font-medium focus:outline-none focus:border-[var(--ink)]' type="text" placeholder='Street Address / Flat / Landmark' />
+                <div className='flex gap-3'>
+                    <input required onChange={onChangeHandler} name='city' value={formData.city} className='border border-gray-300 rounded-lg py-2.5 px-3.5 w-full text-sm font-medium focus:outline-none focus:border-[var(--ink)]' type="text" placeholder='City' />
+                    <input onChange={onChangeHandler} name='state' value={formData.state} className='border border-gray-300 rounded-lg py-2.5 px-3.5 w-full text-sm font-medium focus:outline-none focus:border-[var(--ink)]' type="text" placeholder='State' />
                 </div>
                 <div className='flex gap-3'>
-                    <input required onChange={onChangeHandler} name='firstName' value={formData.firstName} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='First name' />
-                    <input required onChange={onChangeHandler} name='lastName' value={formData.lastName} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='Last name' />
+                    <div className='w-full'>
+                        <input required onChange={onChangeHandler} name='zipcode' value={formData.zipcode} className='border border-gray-300 rounded-lg py-2.5 px-3.5 w-full text-sm font-medium focus:outline-none focus:border-[var(--ink)]' type="text" maxLength={6} placeholder='6-Digit Pincode' />
+                        {formData.zipcode && (
+                            <div className='mt-1 text-xs'>
+                                {formData.zipcode.toString().trim().length === 6 ? (
+                                    <p className='text-emerald-600 font-semibold flex items-center gap-1 text-[11px]'>
+                                        <CheckCircle2 size={12} />
+                                        <span>Verified: Express delivery & COD available</span>
+                                    </p>
+                                ) : (
+                                    <p className='text-amber-600 text-[11px]'>
+                                        {6 - formData.zipcode.length} more digit{6 - formData.zipcode.length > 1 ? 's' : ''} needed for serviceability check
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    <div className='w-full'>
+                        <select
+                            name='country'
+                            value={formData.country || 'India'}
+                            onChange={onChangeHandler}
+                            className='border border-gray-300 rounded-lg py-2.5 px-3 w-full text-sm font-medium bg-white dark:bg-neutral-900 focus:outline-none focus:border-[var(--ink)] cursor-pointer'
+                            required
+                        >
+                            <option value="India">🇮🇳 India</option>
+                            <option value="United States">🇺🇸 United States</option>
+                            <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                            <option value="Canada">🇨🇦 Canada</option>
+                            <option value="Australia">🇦🇺 Australia</option>
+                            <option value="United Arab Emirates">🇦🇪 United Arab Emirates</option>
+                            <option value="Germany">🇩🇪 Germany</option>
+                            <option value="Singapore">🇸🇬 Singapore</option>
+                        </select>
+                    </div>
                 </div>
-                <input required onChange={onChangeHandler} name='email' value={formData.email} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="email" placeholder='Email address' />
-                <input required onChange={onChangeHandler} name='street' value={formData.street} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='Street' />
-                <div className='flex gap-3'>
-                    <input required onChange={onChangeHandler} name='city' value={formData.city} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='City' />
-                    <input onChange={onChangeHandler} name='state' value={formData.state} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='State' />
+
+                {/* 10-Digit Mobile Phone with +91 badge and live validation */}
+                <div className='w-full'>
+                    <div className='relative'>
+                        <span className='absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-500 select-none'>
+                            +91
+                        </span>
+                        <input
+                            required
+                            onChange={onChangeHandler}
+                            name='phone'
+                            value={formData.phone}
+                            className='border border-gray-300 rounded-lg py-2.5 pl-12 pr-4 w-full text-sm font-medium focus:outline-none focus:border-[var(--ink)]'
+                            type="tel"
+                            maxLength={10}
+                            placeholder='10-digit mobile number'
+                        />
+                    </div>
+                    {formData.phone && (
+                        <div className='mt-1 text-xs'>
+                            {formData.phone.length === 10 ? (
+                                <p className='text-emerald-600 font-semibold flex items-center gap-1 text-[11px]'>
+                                    <CheckCircle2 size={12} />
+                                    <span>Verified 10-digit mobile number</span>
+                                </p>
+                            ) : (
+                                <p className='text-amber-600 text-[11px]'>
+                                    {10 - formData.phone.length} more digit{10 - formData.phone.length > 1 ? 's' : ''} needed (10-digit Indian phone)
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </div>
-                <div className='flex gap-3'>
-                    <input required onChange={onChangeHandler} name='zipcode' value={formData.zipcode} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="number" placeholder='Zipcode' />
-                    <input required onChange={onChangeHandler} name='country' value={formData.country} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='Country' />
-                </div>
-                <input required onChange={onChangeHandler} name='phone' value={formData.phone} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="number" placeholder='Phone' />
             </div>
 
 
