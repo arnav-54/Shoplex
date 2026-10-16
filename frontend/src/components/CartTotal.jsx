@@ -7,7 +7,8 @@ const CartTotal = ({ discount = 0, couponCode = null }) => {
   const { currency, delivery_fee, getCartAmount, formatPrice } = useContext(ShopContext);
 
   const subtotal = getCartAmount();
-  const total = subtotal === 0 ? 0 : subtotal - discount + delivery_fee;
+  const effectiveShipping = subtotal >= 999 ? 0 : delivery_fee;
+  const total = subtotal === 0 ? 0 : Math.max(0, subtotal - discount + effectiveShipping);
 
   return (
     <div className='w-full'>
@@ -35,9 +36,22 @@ const CartTotal = ({ discount = 0, couponCode = null }) => {
             <hr />
           </>
         )}
-        <div className='flex justify-between'>
-          <p>Shipping Fee</p>
-          <p>{currency} {formatPrice(delivery_fee)}</p>
+        <div className='flex justify-between items-center'>
+          <div className='flex items-center gap-1.5'>
+            <p>Shipping Fee</p>
+            {subtotal >= 999 && subtotal > 0 && (
+              <span className='text-[10px] font-bold text-green-700 bg-green-100 dark:bg-green-900/40 dark:text-green-300 px-1.5 py-0.5 rounded'>
+                OVER ₹999
+              </span>
+            )}
+          </div>
+          {effectiveShipping === 0 && subtotal > 0 ? (
+            <span className='text-xs font-bold text-green-600 uppercase tracking-wider bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded'>
+              FREE
+            </span>
+          ) : (
+            <p>{currency} {formatPrice(delivery_fee)}</p>
+          )}
         </div>
         <hr />
         <div className='flex justify-between'>

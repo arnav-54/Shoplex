@@ -155,7 +155,12 @@ const ShopContextProvider = (props) => {
 
     const getCartCount = () => {
         let totalCount = 0;
+        const productMap = new Map(products.map(p => [p._id || p.id, p]));
+
         for (const items in cartItems) {
+            // Only count if product exists in current store
+            if (!productMap.has(items)) continue;
+
             for (const item in cartItems[items]) {
                 try {
                     if (cartItems[items][item] > 0) {
